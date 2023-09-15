@@ -1,7 +1,9 @@
 import requests
 import logging
+from urllib.parse import quote_plus
 from datetime import datetime, timedelta
 import os
+import tempfile
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 current_date = datetime.now()
@@ -151,11 +153,62 @@ def card_exists(board_id, card_name):
     cards = request_trello(f"/boards/{board_id}/cards")
     return any(card['name'] == card_name for card in cards)
 
+def upload_custom_board_background(member_id, file_path):
+    """Upload a custom background image and get its ID."""
+    with open(file_path, 'rb') as file:
+        files = {'file': (os.path.basename(file_path), file)}
+        endpoint = f"/members/{member_id}/customBoardBackgrounds"
+        response = request_trello(endpoint, method="POST", files=files)
+        return response.get('id') if response else None
+
+def set_custom_board_background(board_id, background_id):
+    """Set the board's custom background using its ID."""
+    endpoint = f"/boards/{board_id}/prefs/customBoardBackground"
+    response = request_trello(endpoint, method="PUT", value=background_id)
+    return response is not None
+
+def get_member_id():
+    """Get the member ID for the authenticated user."""
+    response = request_trello("/members/me")
+    return response.get('id') if response else None
+
+def download_image(url):
+    """Download the image from the given URL and save it to a temporary file."""
+    response = requests.get(url)
+    if response.status_code == 200:
+        # Create a temporary file and write the image content to it
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
+        temp_file.write(response.content)
+        temp_file.close()
+        return temp_file.name
+    logging.error(f"Failed to download image from {url}")
+    return None
+
 def set_board_background(board_id):
-    background_img_url = f"{RAW_URL_BASE}imgs/background/groot.png"
-    response = request_trello(f"/boards/{board_id}/prefs/backgroundImage", "PUT", value=background_img_url)
-    if not response:
-        logging.error("Failed to set board background image")
+    """Set a custom board background."""
+    member_id = get_member_id()
+    if not member_id:
+        logging.error("Failed to retrieve member ID")
+        return
+
+    # Constructing the URL to download the image
+    image_url = f"{RAW_URL_BASE}imgs/background/groot.png"
+    file_path = download_image(image_url)
+    
+    if not file_path:
+        logging.error(f"Failed to download the image from {image_url}")
+        return
+
+    background_id = upload_custom_board_background(member_id, file_path)
+    if background_id:
+        success = set_custom_board_background(board_id, background_id)
+        if not success:
+            logging.error("Failed to set board background image")
+    else:
+        logging.error("Failed to upload custom board background image")
+
+    # Optionally, you can remove the temporary file after uploading.
+    os.remove(file_path)
 
 def attach_image_to_card(card_id, topic):
     image_url = f"{RAW_URL_BASE}imgs/cards/{topic}.png"
