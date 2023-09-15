@@ -155,9 +155,13 @@ def card_exists(board_id, card_name):
 
 def set_custom_board_background(board_id, background_id):
     """Set the board's custom background using its ID."""
-    endpoint = f"/boards/{board_id}/prefs/customBoardBackground"
+    endpoint = f"/boards/{board_id}/prefs/background"
     response = request_trello(endpoint, method="PUT", value=background_id)
-    return response is not None
+    if not response:
+        logging.error(f"Failed to set board background image for board ID: {board_id} with background ID: {background_id}")
+        return False
+    return True
+
 
 def get_member_id():
     """Get the member ID for the authenticated user."""
