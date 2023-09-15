@@ -100,7 +100,7 @@ def upload_custom_board_background(config, settings, member_id, image_filepath):
     return response.get('id') if response else None
 
 def set_custom_board_background(config, settings, board_id, background_id):
-    endpoint = f"/boards/{board_id}/prefs/background"
+    endpoint = f"boards/{board_id}/prefs/background"
     response = trello_request(config, settings, endpoint, method="PUT", value=background_id)
     return response if response else None
 
