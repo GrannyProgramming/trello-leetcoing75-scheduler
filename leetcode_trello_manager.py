@@ -38,7 +38,11 @@ def trello_request(config, settings, resource, method="GET", entity="boards", **
     url = f"{settings['BASE_URL']}/{entity}/{resource}"
     query = {'key': config['API_KEY'], 'token': config['OAUTH_TOKEN'], **kwargs}
     response = requests.request(method, url, params=query)
-    return response.json() if response.status_code == 200 else None
+
+    if response.status_code != 200:
+        logging.error(f"Request to {url} failed with status code {response.status_code}. Response: {response.text}")
+        return None
+    return response.json()
 
 
 def get_board_id(config, settings, name):
@@ -139,36 +143,63 @@ def generate_all_due_dates(topics, start_date):
 
 def create_labels_for_board(config, settings, board_id):
     label_colors = {'Easy': 'green', 'Medium': 'yellow', 'Somewhat know': 'blue', 'Do not know': 'red', 'Know': 'green'}
+    labels = trello_request(config, settings, f"/boards/{board_id}/labels")
+    if labels is None:
+        logging.error(f"Failed to fetch labels for board with ID: {board_id}")
+        return
+
+    label_names = [l.get('name') for l in labels if 'name' in l]
     for label, color in label_colors.items():
-        labels = trello_request(config, settings, f"/boards/{board_id}/labels")
-        if labels is None:
-            logging.error(f"Failed to fetch labels for board with ID: {board_id}")
-            continue
-        label_names = [l.get('name') for l in labels if 'name' in l]
         if label not in label_names:
-            trello_request(config, "/labels", "POST", name=label, color=color, idBoard=board_id)
+            trello_request(config, settings, "/labels", "POST", name=label, color=color, idBoard=board_id)
 
 
 def create_cards_for_board(config, settings, board_id, topics, current_date):
-    list_ids = {l['name']: l['id'] for l in trello_request(config, settings, f"{board_id}/lists")}
-    label_ids = {l['name']: l['id'] for l in trello_request(config, settings, f"{board_id}/labels")}
+    list_ids_response = trello_request(config, settings, f"{board_id}/lists")
+    if list_ids_response is None:
+        logging.error(f"Failed to fetch lists for board with ID: {board_id}")
+        return
+
+    list_ids = {l['name']: l['id'] for l in list_ids_response}
+
+    label_ids_response = trello_request(config, settings, f"{board_id}/labels")
+    if label_ids_response is None:
+        logging.error(f"Failed to fetch labels for board with ID: {board_id}")
+        return
+
+    label_ids = {l['name']: l['id'] for l in label_ids_response}
+    
     all_due_dates = generate_all_due_dates(topics, current_date)
     due_date_index = 0  # Initialize due_date_index at the beginning of the function
 
     for idx, (category, problems) in enumerate(topics.items()):
-        topic_label_id = trello_request(config, settings, "/labels", "POST", name=category, color="black", idBoard=board_id)['id']
+        topic_label_response = trello_request(config, settings, "/labels", "POST", name=category, color="black", idBoard=board_id)
+        if topic_label_response is None:
+            logging.error(f"Failed to create label for category: {category}")
+            continue
+
+        topic_label_id = topic_label_response['id']
         for problem in problems:
             card_name = f"{category}: {problem['title']}"
             if not card_exists(config, settings, board_id, card_name):
-                difficulty_label_id = label_ids[problem["difficulty"]]
+                difficulty_label_id = label_ids.get(problem["difficulty"])
+                if not difficulty_label_id:
+                    logging.error(f"Difficulty label not found for problem: {problem['title']}")
+                    continue
+
                 link = generate_leetcode_link(problem["title"])                
                 list_name = "Do this week" if is_due_this_week(all_due_dates[due_date_index], current_date) else "Backlog"
                 due_date_for_card = all_due_dates[due_date_index]
                 due_date_index += 1
-                card_response = trello_request(config, "/cards", "POST", idList=list_ids[list_name], name=card_name, desc=link, idLabels=[difficulty_label_id, topic_label_id], due=due_date_for_card.isoformat())
+
+                card_response = trello_request(config, "/cards", "POST", idList=list_ids.get(list_name), name=card_name, desc=link, idLabels=[difficulty_label_id, topic_label_id], due=due_date_for_card.isoformat())
+                if not card_response:
+                    logging.error(f"Failed to create card: {card_name}")
+                    continue
+
                 # Once the card is created, attach the image to the card
-                if card_response:
-                    attach_image_to_card(config, settings, card_response['id'], category)
+                attach_image_to_card(config, settings, card_response['id'], category)
+
 
 def process_retrospective_cards(config, settings, board_id, current_date):
     list_ids = {l['name']: l['id'] for l in trello_request(config, settings, f"/boards/{board_id}/lists")}
@@ -199,7 +230,11 @@ def process_completed_cards(config, settings, board_id, current_date):
             trello_request(config, settings, f"/cards/{card['id']}", "PUT", idList=list_ids["Do this week"])
 
 def setup_board(config, settings,  board_name, topics, current_date):
-    board_id = get_board_id(config, settings, board_name) or trello_request(config, settings, "", method="POST", name=board_name).get('id')
+    board_id = get_board_id(config, settings, board_name)
+    if board_id is None:
+        board_response = trello_request(config, settings, "", method="POST", name=board_name)
+        board_id = board_response.get('id') if board_response else None
+
     if not board_id:
         logging.error(f"Failed to create or retrieve board with name: {board_name}")
         return
