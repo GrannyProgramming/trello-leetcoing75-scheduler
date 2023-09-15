@@ -5,8 +5,7 @@ from functools import reduce
 import os
 import json
 import configparser
-from enum import Enum
-from urllib.parse import urljoin
+
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -49,6 +48,8 @@ def trello_request(config, settings, resource, method="GET", entity="boards", ti
     logging.info(f"Making a request to endpoint: {entity}/{resource}")
     url = f"{settings['BASE_URL']}/{entity}/{resource}".rstrip('/')
     query = {'key': config['API_KEY'], 'token': config['OAUTH_TOKEN'], **kwargs}
+    logging.info(f"Constructed URL: {url}")
+
     
     return make_request(url, method, params=query, data=None, timeout=timeout, files=files)
 
@@ -169,6 +170,8 @@ def create_labels_for_board(config, settings, board_id):
     for label, color in label_colors.items():
         if label not in label_names:
             trello_request(config, settings, f"{board_id}/labels", "POST", entity="boards", name=label, color=color)
+    logging.info(f"Board ID being passed: {board_id}")
+
 
 
 
