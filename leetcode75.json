@@ -1,0 +1,346 @@
+{
+    "Arrays and Strings": [
+        {
+            "title": "Merge Strings Alternately",
+            "difficulty": "Easy"
+        },
+        {
+            "title": "Greatest Common Divisor of Strings",
+            "difficulty": "Easy"
+        },
+        {
+            "title": "Kids With the Greatest Number of Candies",
+            "difficulty": "Easy"
+        },
+        {
+            "title": "Can Place Flowers",
+            "difficulty": "Easy"
+        },
+        {
+            "title": "Reverse Vowels of a String",
+            "difficulty": "Easy"
+        },
+        {
+            "title": "Reverse Words in a String",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Product of Array Except Self",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Increasing Triplet Subsequence",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "String Compression",
+            "difficulty": "Medium"
+        }
+    ],
+    "Two Pointers": [
+        {
+            "title": "Move Zeroes",
+            "difficulty": "Easy"
+        },
+        {
+            "title": "Is Subsequence",
+            "difficulty": "Easy"
+        },
+        {
+            "title": "Container With Most Water",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Max Number of K-Sum Pairs",
+            "difficulty": "Medium"
+        }
+    ],
+    "Sliding Window": [
+        {
+            "title": "Maximum Average Subarray I",
+            "difficulty": "Easy"
+        },
+        {
+            "title": "Maximum Number of Vowels in a Substring of Given Length",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Max Consecutive Ones III",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Longest Subarray of 1's After Deleting One Element",
+            "difficulty": "Medium"
+        }
+    ],
+    "Prefix Sum": [
+        {
+            "title": "Find the Highest Altitude",
+            "difficulty": "Easy"
+        },
+        {
+            "title": "Find Pivot Index",
+            "difficulty": "Easy"
+        }
+    ],
+    "Hash Map and Set": [
+        {
+            "title": "Find the Difference of Two Arrays",
+            "difficulty": "Easy"
+        },
+        {
+            "title": "Unique Number of Occurrences",
+            "difficulty": "Easy"
+        },
+        {
+            "title": "Determine if Two Strings Are Close",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Equal Row and Column Pairs",
+            "difficulty": "Medium"
+        }
+    ],
+    "Stack": [
+        {
+            "title": "Removing Stars From a String",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Asteroid Collision",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Decode String",
+            "difficulty": "Medium"
+        }
+    ],
+    "Queue": [
+        {
+            "title": "Number of Recent Calls",
+            "difficulty": "Easy"
+        },
+        {
+            "title": "Dota2 Senate",
+            "difficulty": "Medium"
+        }
+    ],
+    "Linked List": [
+        {
+            "title": "Delete the Middle Node of a Linked List",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Odd Even Linked List",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Reverse Linked List",
+            "difficulty": "Easy"
+        },
+        {
+            "title": "Maximum Twin Sum of a Linked List",
+            "difficulty": "Medium"
+        }
+    ],
+    "Binary Tree - DFS": [
+        {
+            "title": "Maximum Depth of Binary Tree",
+            "difficulty": "Easy"
+        },
+        {
+            "title": "Leaf-Similar Trees",
+            "difficulty": "Easy"
+        },
+        {
+            "title": "Count Good Nodes in Binary Tree",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Path Sum III",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Longest ZigZag Path in a Binary Tree",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Lowest Common Ancestor of a Binary Tree",
+            "difficulty": "Medium"
+        }
+    ],
+    "Binary Tree - BFS": [
+        {
+            "title": "Binary Tree Right Side View",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Maximum Level Sum of a Binary Tree",
+            "difficulty": "Medium"
+        }
+    ],
+    "Binary Search Tree": [
+        {
+            "title": "Search in a Binary Search Tree",
+            "difficulty": "Easy"
+        },
+        {
+            "title": "Delete Node in a BST",
+            "difficulty": "Medium"
+        }
+    ],
+    "Graphs - DFS": [
+        {
+            "title": "Keys and Rooms",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Number of Provinces",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Reorder Routes to Make All Paths Lead to the City Zero",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Evaluate Division",
+            "difficulty": "Medium"
+        }
+    ],
+    "Graphs - BFS": [
+        {
+            "title": "Nearest Exit from Entrance in Maze",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Rotting Oranges",
+            "difficulty": "Medium"
+        }
+    ],
+    "Heap and Priority Queue": [
+        {
+            "title": "Kth Largest Element in an Array",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Smallest Number in Infinite Set",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Maximum Subsequence Score",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Total Cost to Hire K Workers",
+            "difficulty": "Medium"
+        }
+    ],
+    "Binary Search": [
+        {
+            "title": "Guess Number Higher or Lower",
+            "difficulty": "Easy"
+        },
+        {
+            "title": "Successful Pairs of Spells and Potions",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Find Peak Element",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Koko Eating Bananas",
+            "difficulty": "Medium"
+        }
+    ],
+    "Backtracking": [
+        {
+            "title": "Letter Combinations of a Phone Number",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Combination Sum III",
+            "difficulty": "Medium"
+        }
+    ],
+    "DP - 1D": [
+        {
+            "title": "N-th Tribonacci Number",
+            "difficulty": "Easy"
+        },
+        {
+            "title": "Min Cost Climbing Stairs",
+            "difficulty": "Easy"
+        },
+        {
+            "title": "House Robber",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Domino and Tromino Tiling",
+            "difficulty": "Medium"
+        }
+    ],
+    "DP - Multidimensional": [
+        {
+            "title": "Unique Paths",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Longest Common Subsequence",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Best Time to Buy and Sell Stock with Transaction Fee",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Edit Distance",
+            "difficulty": "Medium"
+        }
+    ],
+    "Bit Manipulation": [
+        {
+            "title": "Counting Bits",
+            "difficulty": "Easy"
+        },
+        {
+            "title": "Single Number",
+            "difficulty": "Easy"
+        },
+        {
+            "title": "Minimum Flips to Make a OR b Equal to c",
+            "difficulty": "Medium"
+        }
+    ],
+    "Trie": [
+        {
+            "title": "Implement Trie (Prefix Tree)",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Search Suggestions System",
+            "difficulty": "Medium"
+        }
+    ],
+    "Intervals": [
+        {
+            "title": "Non-overlapping Intervals",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Minimum Number of Arrows to Burst Balloons",
+            "difficulty": "Medium"
+        }
+    ],
+    "Monotonic Stack": [
+        {
+            "title": "Daily Temperatures",
+            "difficulty": "Medium"
+        },
+        {
+            "title": "Online Stock Span",
+            "difficulty": "Medium"
+        }
+    ]
+}
