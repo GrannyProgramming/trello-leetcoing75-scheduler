@@ -87,14 +87,8 @@ def download_image(url):
     return response.content if response.status_code == 200 else None
 
 def upload_custom_board_background(config, settings, member_id, image_content):
-    endpoint = f"/members/{member_id}/customBoardBackgrounds"
-    headers = {
-        'Content-Type': 'image/png'
-    }
-    files = {
-        'file': ('background.png', image_content, 'image/png')
-    }
-    response = trello_request(config, settings, endpoint, method="POST", headers=headers, files=files)
+    endpoint = f"{member_id}/customBoardBackgrounds"
+    response = trello_request(config, settings, endpoint, method="POST", entity="members", file=image_content)
     return response.get('id') if response else None
 
 def set_custom_board_background(config, settings, board_id, background_id):
