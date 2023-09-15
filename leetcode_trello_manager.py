@@ -153,6 +153,12 @@ def card_exists(board_id, card_name):
     cards = request_trello(f"/boards/{board_id}/cards")
     return any(card['name'] == card_name for card in cards)
 
+def set_custom_board_background(board_id, background_id):
+    """Set the board's custom background using its ID."""
+    endpoint = f"/boards/{board_id}/prefs/customBoardBackground"
+    response = request_trello(endpoint, method="PUT", value=background_id)
+    return response is not None
+
 def get_member_id():
     """Get the member ID for the authenticated user."""
     response = request_trello("/members/me")
