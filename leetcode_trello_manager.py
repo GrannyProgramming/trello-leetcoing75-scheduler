@@ -153,20 +153,6 @@ def card_exists(board_id, card_name):
     cards = request_trello(f"/boards/{board_id}/cards")
     return any(card['name'] == card_name for card in cards)
 
-def upload_custom_board_background(member_id, file_path):
-    """Upload a custom background image and get its ID."""
-    with open(file_path, 'rb') as file:
-        files = {'file': (os.path.basename(file_path), file)}
-        endpoint = f"/members/{member_id}/customBoardBackgrounds"
-        response = request_trello(endpoint, method="POST", files=files)
-        return response.get('id') if response else None
-
-def set_custom_board_background(board_id, background_id):
-    """Set the board's custom background using its ID."""
-    endpoint = f"/boards/{board_id}/prefs/customBoardBackground"
-    response = request_trello(endpoint, method="PUT", value=background_id)
-    return response is not None
-
 def get_member_id():
     """Get the member ID for the authenticated user."""
     response = request_trello("/members/me")
@@ -296,7 +282,7 @@ def setup_board(board_name, topics):
             return
 
     set_board_background(board_id)
-      existing_list_names = {lst['name'] for lst in request_trello(f"/boards/{board_id}/lists", cards="none")}
+    existing_list_names = {lst['name'] for lst in request_trello(f"/boards/{board_id}/lists", cards="none")}
     
     # Delete default lists
     for default_list in ["To Do", "Doing", "Done"]:
