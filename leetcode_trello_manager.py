@@ -70,6 +70,9 @@ def manage_default_and_required_lists(config, settings, board_id):
 
 def get_member_id(config, settings):
     response = trello_request(config, settings, "/members/me")
+    if response is None:
+        logging.error("Failed to fetch member ID.")
+        return None
     return response.get('id')
 
 def download_image(url):
