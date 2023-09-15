@@ -156,7 +156,7 @@ def create_cards_for_board(config, settings, board_id, topics, current_date):
     due_date_index = 0  # Initialize due_date_index at the beginning of the function
 
     for idx, (category, problems) in enumerate(topics.items()):
-        topic_label_id = trello_request(config, "/labels", "POST", name=category, color="black", idBoard=board_id)['id']
+        topic_label_id = trello_request(config, settings, "/labels", "POST", name=category, color="black", idBoard=board_id)['id']
         for problem in problems:
             card_name = f"{category}: {problem['title']}"
             if not card_exists(config, settings, board_id, card_name):
