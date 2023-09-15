@@ -3,13 +3,14 @@ import logging
 from datetime import datetime, timedelta
 import os
 
-
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 current_date = datetime.now()
 API_KEY = os.environ['API_KEY']
 OAUTH_TOKEN = os.environ['OAUTH_TOKEN']
+RAW_URL_BASE = os.environ['RAW_URL_BASE']
 BASE_URL = "https://api.trello.com/1"
 BOARD_NAME = "LeetCode Challenges"
+
 topics = {
     "Arrays and Strings": [
         {"title": "Merge Strings Alternately", "difficulty": "Easy"},
@@ -145,6 +146,16 @@ def request_trello(endpoint, method="GET", **kwargs):
     except requests.exceptions.JSONDecodeError:
         return None
 
+def set_board_background(board_id):
+    background_img_url = f"{RAW_URL_BASE}imgs/backgrounds/groot.png"
+    request_trello(f"/boards/{board_id}/prefs/backgroundImage", "PUT", value=background_img_url)
+    logging.info(f"Background image set for board with ID {board_id}")
+
+def attach_image_to_card(card_id, img_name):
+    img_url = f"{RAW_URL_BASE}imgs/cards/{img_name}.jpg"
+    request_trello(f"/cards/{card_id}/attachments", "POST", url=img_url)
+    logging.info(f"Attached image {img_name}.jpg to card with ID {card_id}")
+
 
 def get_board_id(name):
     return next((board['id'] for board in request_trello("/members/me/boards", filter="open") if board['name'] == name), None)
@@ -221,6 +232,7 @@ def retest_cards(board_name):
 
 def setup_board(board_name, topics):
     board_id = get_board_id(board_name) or request_trello("/boards", "POST", name=board_name)['id']
+    set_board_background(board_id)  # Setting the board background image
     existing_list_names = {lst['name'] for lst in request_trello(f"/boards/{board_id}/lists", cards="none")}
     
     # Delete default lists
@@ -257,6 +269,8 @@ def setup_board(board_name, topics):
                 due_date_for_card = all_due_dates[due_date_index]
                 due_date_index += 1
                 request_trello("/cards", "POST", idList=list_ids[list_name], name=card_name, desc=link, idLabels=[difficulty_label_id, topic_label_id], due=due_date_for_card.isoformat())
+                card_id = request_trello("/cards", "POST", idList=list_ids[list_name], name=card_name, desc=link, idLabels=[difficulty_label_id, topic_label_id], due=due_date_for_card.isoformat())['id']
+                attach_image_to_card(card_id, category)  # Attaching the image to the card
 
     logging.info("Trello board setup completed!")
 
