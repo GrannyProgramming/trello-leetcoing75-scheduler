@@ -42,10 +42,14 @@ def make_request(url, method, params=None, data=None, timeout=None, files=None):
 
 def trello_request(config, settings, resource, method="GET", entity="boards", timeout=None, files=None, **kwargs):
     logging.info(f"Making a request to endpoint: {entity}/{resource}")
-    url = f"{settings['BASE_URL']}/{entity}/{resource}".rstrip('/')
+    
+    # Construct the URL without double slashes
+    url = f"{settings['BASE_URL']}/{entity}/{resource}".rstrip('/').replace('//', '/')
+    
     query = {'key': config['API_KEY'], 'token': config['OAUTH_TOKEN'], **kwargs}
     
     return make_request(url, method, params=query, data=None, timeout=timeout, files=files)
+
 
 
 def get_board_id(config, settings, name):
