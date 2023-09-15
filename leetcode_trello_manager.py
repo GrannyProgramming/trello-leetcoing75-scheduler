@@ -33,20 +33,19 @@ def load_config():
     }
 
 
-def make_request(url, method, params):
-    with requests.request(method, url, params=params) as response:
+def make_request(url, method, params, headers=None):
+    with requests.request(method, url, params=params, headers=headers) as response:
         if response.status_code != 200:
             logging.error(f"Request to {url} failed with status code {response.status_code}. Response: {response.text}")
             return None
         return response.json()
 
-def trello_request(config, settings, resource, method="GET", entity="boards", **kwargs):
+def trello_request(config, settings, resource, method="GET", entity="boards", headers=None, **kwargs):
     logging.info(f"Making a request to endpoint: {entity}/{resource}")
     url = f"{settings['BASE_URL']}/{entity}/{resource}"
     query = {'key': config['API_KEY'], 'token': config['OAUTH_TOKEN'], **kwargs}
     
-    return make_request(url, method, query)
-
+    return make_request(url, method, query, headers)
 
 
 def get_board_id(config, settings, name):
@@ -89,7 +88,13 @@ def download_image(url):
 
 def upload_custom_board_background(config, settings, member_id, image_content):
     endpoint = f"/members/{member_id}/customBoardBackgrounds"
-    response = trello_request(config, settings, endpoint, method="POST", file=image_content)
+    headers = {
+        'Content-Type': 'image/png'
+    }
+    files = {
+        'file': ('background.png', image_content, 'image/png')
+    }
+    response = trello_request(config, settings, endpoint, method="POST", headers=headers, files=files)
     return response.get('id') if response else None
 
 def set_custom_board_background(config, settings, board_id, background_id):
@@ -196,7 +201,7 @@ def create_cards_for_board(config, settings, board_id, topics, current_date):
                 due_date_for_card = all_due_dates[due_date_index]
                 due_date_index += 1
 
-                card_response = trello_request(config, "/cards", "POST", idList=list_ids.get(list_name), name=card_name, desc=link, idLabels=[difficulty_label_id, topic_label_id], due=due_date_for_card.isoformat())
+                card_response = trello_request(config, settings, resource="/cards", method="POST", entity="", idList=list_ids.get(list_name), name=card_name, desc=link, idLabels=[difficulty_label_id, topic_label_id], due=due_date_for_card.isoformat())
                 if not card_response:
                     logging.error(f"Failed to create card: {card_name}")
                     continue
