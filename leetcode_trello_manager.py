@@ -90,11 +90,10 @@ def download_image(url, filepath="tmp_image.png"):
         logging.error(f"Failed to download image. HTTP status code: {response.status_code}")
         return None
 
-
 def upload_custom_board_background(config, settings, member_id, image_filepath):
     endpoint = f"members/{member_id}/customBoardBackgrounds"
     with open(image_filepath, 'rb') as file:
-        files = {'file': file}
+        files = {'file': (os.path.basename(image_filepath), file, 'image/png')}
         response = trello_request(config, settings, endpoint, method="POST", entity="", files=files)
     return response.get('id') if response else None
 
