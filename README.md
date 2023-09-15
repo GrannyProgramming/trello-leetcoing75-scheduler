@@ -34,7 +34,7 @@ The Trello LeetCoding75 Scheduler inherently supports spaced repetition. By cate
 
 ### 2. Obtain OAuth Token from Trello:
 
-- **Generate Token**: After obtaining your API key, [click here](https://trello.com/1/authorize?expiration=1day&name=MyPersonalToken&scope=read,write&response_type=token&key=YOUR_API_KEY). Replace `YOUR_API_KEY` with your Trello API key.
+- **Generate Token**: After obtaining your API key, https://trello.com/1/authorize?expiration=1day&name=MyPersonalToken&scope=read,write&response_type=token&key=YOUR_API_KEY. Replace `YOUR_API_KEY` with your Trello API key and navigate to this new URL.
 - **Authorize**: Grant the token access to your Trello account.
 - **Get Token**: Post authorization, you'll receive an OAuth token. Copy and store it securely.
 
