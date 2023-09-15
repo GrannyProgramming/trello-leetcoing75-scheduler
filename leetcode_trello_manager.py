@@ -3,11 +3,11 @@ import logging
 from datetime import datetime, timedelta
 import os
 
-
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 current_date = datetime.now()
 API_KEY = os.environ['API_KEY']
 OAUTH_TOKEN = os.environ['OAUTH_TOKEN']
+RAW_URL_BASE = os.environ['RAW_URL_BASE']
 BASE_URL = "https://api.trello.com/1"
 BOARD_NAME = "LeetCode Challenges"
 topics = {
