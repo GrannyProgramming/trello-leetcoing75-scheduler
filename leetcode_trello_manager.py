@@ -33,16 +33,20 @@ def load_config():
     }
 
 
+def make_request(url, method, params):
+    with requests.request(method, url, params=params) as response:
+        if response.status_code != 200:
+            logging.error(f"Request to {url} failed with status code {response.status_code}. Response: {response.text}")
+            return None
+        return response.json()
+
 def trello_request(config, settings, resource, method="GET", entity="boards", **kwargs):
     logging.info(f"Making a request to endpoint: {entity}/{resource}")
     url = f"{settings['BASE_URL']}/{entity}/{resource}"
     query = {'key': config['API_KEY'], 'token': config['OAUTH_TOKEN'], **kwargs}
-    response = requests.request(method, url, params=query)
+    
+    return make_request(url, method, query)
 
-    if response.status_code != 200:
-        logging.error(f"Request to {url} failed with status code {response.status_code}. Response: {response.text}")
-        return None
-    return response.json()
 
 
 def get_board_id(config, settings, name):
