@@ -80,17 +80,24 @@ def get_member_id(config, settings):
         return None
     return response.get('id')
 
-def download_image(url):
+def download_image(url, filepath="tmp_image.png"):
     response = requests.get(url)
-    return response.content if response.status_code == 200 else None
+    if response.status_code == 200:
+        with open(filepath, 'wb') as file:
+            file.write(response.content)
+        return filepath
+    else:
+        logging.error(f"Failed to download image. HTTP status code: {response.status_code}")
+        return None
 
-def upload_custom_board_background(config, settings, member_id, image_content):
+
+def upload_custom_board_background(config, settings, member_id, image_filepath):
     endpoint = f"members/{member_id}/customBoardBackgrounds"
-    files = {
-        "file": ("background.png", image_content, "image/png")
-    }
-    response = trello_request(config, settings, endpoint, method="POST", entity="", files=files)
+    with open(image_filepath, 'rb') as file:
+        files = {'file': file}
+        response = trello_request(config, settings, endpoint, method="POST", entity="", files=files)
     return response.get('id') if response else None
+
 
 def set_custom_board_background(config, settings, board_id, background_id):
     endpoint = f"/boards/{board_id}/prefs/background"
@@ -103,13 +110,13 @@ def set_board_background(config, settings, board_id):
         logging.error("Failed to retrieve member ID")
         return
 
-    image_content = download_image(f"{config['RAW_URL_BASE']}imgs/background/groot.png")
+    image_filepath = download_image(f"{config['RAW_URL_BASE']}imgs/background/groot.png")
     
-    if not image_content:
+    if not image_filepath:
         logging.error("Failed to download image")
         return
     
-    background_id = upload_custom_board_background(config, settings, member_id, image_content)
+    background_id = upload_custom_board_background(config, settings, member_id, image_filepath)
     if not background_id:
         logging.error("Failed to upload custom board background image")
         return
@@ -117,6 +124,7 @@ def set_board_background(config, settings, board_id):
     response = set_custom_board_background(config, settings, board_id, background_id)
     if not response:
         logging.error("Failed to set board background image")
+
 
 def generate_leetcode_link(title):
     return f"https://leetcode.com/problems/{title.lower().replace(' ', '-')}/"
