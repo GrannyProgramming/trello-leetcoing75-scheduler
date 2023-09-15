@@ -141,8 +141,13 @@ def create_labels_for_board(config, settings, board_id):
     label_colors = {'Easy': 'green', 'Medium': 'yellow', 'Somewhat know': 'blue', 'Do not know': 'red', 'Know': 'green'}
     for label, color in label_colors.items():
         labels = trello_request(config, settings, f"/boards/{board_id}/labels")
-        if label not in [l['name'] for l in labels]:
+        if labels is None:
+            logging.error(f"Failed to fetch labels for board with ID: {board_id}")
+            continue
+        label_names = [l.get('name') for l in labels if 'name' in l]
+        if label not in label_names:
             trello_request(config, "/labels", "POST", name=label, color=color, idBoard=board_id)
+
 
 def create_cards_for_board(config, settings, board_id, topics, current_date):
     list_ids = {l['name']: l['id'] for l in trello_request(config, settings, f"{board_id}/lists")}
