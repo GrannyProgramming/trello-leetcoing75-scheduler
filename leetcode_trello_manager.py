@@ -184,6 +184,17 @@ def download_image(url):
     logging.error(f"Failed to download image from {url}")
     return None
 
+def upload_custom_board_background(member_id, image_url=None):
+    """Upload a custom background image using its URL and get its ID."""
+    if image_url:
+        # If image_url is provided, use it directly
+        endpoint = f"/members/{member_id}/customBoardBackgrounds"
+        response = request_trello(endpoint, method="POST", url=image_url)
+        return response.get('id') if response else None
+    else:
+        logging.error("Image URL not provided for custom board background")
+        return None
+
 def set_board_background(board_id):
     """Set a custom board background."""
     member_id = get_member_id()
@@ -191,24 +202,16 @@ def set_board_background(board_id):
         logging.error("Failed to retrieve member ID")
         return
 
-    # Constructing the URL to download the image
+    # Constructing the URL for the image
     image_url = f"{RAW_URL_BASE}imgs/background/groot.png"
-    file_path = download_image(image_url)
     
-    if not file_path:
-        logging.error(f"Failed to download the image from {image_url}")
-        return
-
-    background_id = upload_custom_board_background(member_id, file_path)
+    background_id = upload_custom_board_background(member_id, image_url=image_url)
     if background_id:
         success = set_custom_board_background(board_id, background_id)
         if not success:
             logging.error("Failed to set board background image")
     else:
         logging.error("Failed to upload custom board background image")
-
-    # Optionally, you can remove the temporary file after uploading.
-    os.remove(file_path)
 
 def attach_image_to_card(card_id, topic):
     image_url = f"{RAW_URL_BASE}imgs/cards/{topic}.png"
@@ -285,9 +288,15 @@ def retest_cards(board_name):
     logging.info("Retest cards processed!")
 
 def setup_board(board_name, topics):
-    board_id = get_board_id(board_name) or request_trello("/boards", "POST", name=board_name)['id']
-    set_board_background(board_id)  # Setting the board background image
-    existing_list_names = {lst['name'] for lst in request_trello(f"/boards/{board_id}/lists", cards="none")}
+    board_id = get_board_id(board_name)
+    if not board_id:
+        board_id = request_trello("/boards", "POST", name=board_name)['id']
+        if not board_id:
+            logging.error(f"Failed to create or retrieve board with name: {board_name}")
+            return
+
+    set_board_background(board_id)
+      existing_list_names = {lst['name'] for lst in request_trello(f"/boards/{board_id}/lists", cards="none")}
     
     # Delete default lists
     for default_list in ["To Do", "Doing", "Done"]:
