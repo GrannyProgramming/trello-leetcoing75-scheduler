@@ -146,16 +146,22 @@ def request_trello(endpoint, method="GET", **kwargs):
     except requests.exceptions.JSONDecodeError:
         return None
 
+def card_exists(board_id, card_name):
+    """Check if a card with the given name exists on the board."""
+    cards = request_trello(f"/boards/{board_id}/cards")
+    return any(card['name'] == card_name for card in cards)
+
 def set_board_background(board_id):
-    background_img_url = f"{RAW_URL_BASE}imgs/backgrounds/groot.png"
-    request_trello(f"/boards/{board_id}/prefs/backgroundImage", "PUT", value=background_img_url)
-    logging.info(f"Background image set for board with ID {board_id}")
+    background_img_url = "https://raw.githubusercontent.com/your_username/your_repo_name/main/imgs/backgrounds/groot.png"
+    response = request_trello(f"/boards/{board_id}/prefs/backgroundImage", "PUT", value=background_img_url)
+    if not response:
+        logging.error("Failed to set board background image")
 
-def attach_image_to_card(card_id, img_name):
-    img_url = f"{RAW_URL_BASE}imgs/cards/{img_name}.jpg"
-    request_trello(f"/cards/{card_id}/attachments", "POST", url=img_url)
-    logging.info(f"Attached image {img_name}.jpg to card with ID {card_id}")
-
+def attach_image_to_card(card_id, topic):
+    image_url = f"https://raw.githubusercontent.com/your_username/your_repo_name/main/imgs/cards/{topic}.png"
+    response = request_trello(f"/cards/{card_id}/attachments", "POST", url=image_url)
+    if not response:
+        logging.error(f"Failed to attach image to card {card_id}")
 
 def get_board_id(name):
     return next((board['id'] for board in request_trello("/members/me/boards", filter="open") if board['name'] == name), None)
@@ -181,11 +187,6 @@ def get_next_working_day(date):
     while next_day.weekday() >= 5:
         next_day += timedelta(days=1)
     return next_day
-
-def card_exists(board_id, card_name):
-    """Check if a card with the given name exists on the board."""
-    cards = request_trello(f"/boards/{board_id}/cards")
-    return any(card['name'] == card_name for card in cards)
 
 def generate_all_due_dates(topics, start_date):
     due_dates = []
@@ -268,9 +269,10 @@ def setup_board(board_name, topics):
                 list_name = "Do this week" if is_due_this_week(all_due_dates[due_date_index]) else "Backlog"
                 due_date_for_card = all_due_dates[due_date_index]
                 due_date_index += 1
-                request_trello("/cards", "POST", idList=list_ids[list_name], name=card_name, desc=link, idLabels=[difficulty_label_id, topic_label_id], due=due_date_for_card.isoformat())
-                card_id = request_trello("/cards", "POST", idList=list_ids[list_name], name=card_name, desc=link, idLabels=[difficulty_label_id, topic_label_id], due=due_date_for_card.isoformat())['id']
-                attach_image_to_card(card_id, category)  # Attaching the image to the card
+                card_response = request_trello("/cards", "POST", idList=list_ids[list_name], name=card_name, desc=link, idLabels=[difficulty_label_id, topic_label_id], due=due_date_for_card.isoformat())
+                # Once the card is created, attach the image to the card
+                if card_response:
+                    attach_image_to_card(card_response['id'], category)
 
     logging.info("Trello board setup completed!")
 
