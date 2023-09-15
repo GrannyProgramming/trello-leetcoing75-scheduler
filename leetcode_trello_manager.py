@@ -6,6 +6,8 @@ import os
 import json
 import configparser
 from enum import Enum
+from urllib.parse import urljoin
+
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -39,23 +41,16 @@ def make_request(url, method, params=None, data=None, timeout=None, files=None):
             return None
         return response.json()
 
-
 def trello_request(config, settings, resource, method="GET", entity="boards", timeout=None, files=None, **kwargs):
     logging.info(f"Making a request to endpoint: {entity}/{resource}")
     
-    # Construct the URL without double slashes
+    # Use urljoin to construct the URL without double slashes
     base_url = settings['BASE_URL'].rstrip('/')
-    url = f"{base_url}/{entity}/{resource}"
-    
-    # Replace any double slashes that are not part of "https://"
-    url = url.replace('https:/', 'https:/').replace('//', '/')
+    url = urljoin(base_url, f"{entity}/{resource}")
     
     query = {'key': config['API_KEY'], 'token': config['OAUTH_TOKEN'], **kwargs}
     
     return make_request(url, method, params=query, data=None, timeout=timeout, files=files)
-
-
-
 
 def get_board_id(config, settings, name):
     boards = trello_request(config, settings, "me/boards", filter="open", entity="members")
