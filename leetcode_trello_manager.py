@@ -152,7 +152,7 @@ def card_exists(board_id, card_name):
     return any(card['name'] == card_name for card in cards)
 
 def set_board_background(board_id):
-    background_img_url = f"{RAW_URL_BASE}imgs/backgrounds/groot.png"
+    background_img_url = f"{RAW_URL_BASE}imgs/background/groot.png"
     response = request_trello(f"/boards/{board_id}/prefs/backgroundImage", "PUT", value=background_img_url)
     if not response:
         logging.error("Failed to set board background image")
@@ -162,7 +162,7 @@ def attach_image_to_card(card_id, topic):
     response = request_trello(f"/cards/{card_id}/attachments", "POST", url=image_url)
     if not response:
         logging.error(f"Failed to attach image to card {card_id}")
-        
+
 def get_board_id(name):
     return next((board['id'] for board in request_trello("/members/me/boards", filter="open") if board['name'] == name), None)
 
