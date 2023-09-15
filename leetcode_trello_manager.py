@@ -39,15 +39,15 @@ def make_request(url, method, params=None, data=None, timeout=None, files=None):
         if response.status_code != 200:
             logging.error(f"Request to {url} failed with status code {response.status_code}. Response: {response.text}")
             return None
-        return response.json()
+        try:
+            return response.json()
+        except requests.exceptions.JSONDecodeError:
+            logging.error(f"Failed to decode JSON from response. URL: {url}, Response: {response.text}")
+            return None
 
 def trello_request(config, settings, resource, method="GET", entity="boards", timeout=None, files=None, **kwargs):
     logging.info(f"Making a request to endpoint: {entity}/{resource}")
-    
-    # Use urljoin to construct the URL without double slashes
-    base_url = settings['BASE_URL'].rstrip('/')
-    url = urljoin(base_url, f"{entity}/{resource}")
-    
+    url = f"{settings['BASE_URL']}/{entity}/{resource}".rstrip('/')
     query = {'key': config['API_KEY'], 'token': config['OAUTH_TOKEN'], **kwargs}
     
     return make_request(url, method, params=query, data=None, timeout=timeout, files=files)
