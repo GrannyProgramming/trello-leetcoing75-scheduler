@@ -156,7 +156,7 @@ def generate_all_due_dates(topics, start_date):
 
 def create_labels_for_board(config, settings, board_id):
     label_colors = {'Easy': 'green', 'Medium': 'yellow', 'Somewhat know': 'blue', 'Do not know': 'red', 'Know': 'green'}
-    labels = trello_request(config, settings, f"/boards/{board_id}/labels")
+    labels = trello_request(config, settings, f"{board_id}/labels", entity="boards")
     if labels is None:
         logging.error(f"Failed to fetch labels for board with ID: {board_id}")
         return
