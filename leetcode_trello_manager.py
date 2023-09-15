@@ -32,9 +32,8 @@ def load_config():
         'TOPICS_JSON_PATH': os.environ.get('TOPICS_JSON_PATH')
     }
 
-
-def make_request(url, method, params, timeout=None):
-    with requests.request(method, url, params=params, timeout=timeout) as response:
+def make_request(url, method, params=None, data=None, timeout=None):
+    with requests.request(method, url, params=params, data=data, timeout=timeout) as response:
         if response.status_code != 200:
             logging.error(f"Request to {url} failed with status code {response.status_code}. Response: {response.text}")
             return None
@@ -46,9 +45,6 @@ def trello_request(config, settings, resource, method="GET", entity="boards", ti
     query = {'key': config['API_KEY'], 'token': config['OAUTH_TOKEN'], **kwargs}
     
     return make_request(url, method, query, timeout)
-
-
-
 
 def get_board_id(config, settings, name):
     boards = trello_request(config, settings, "me/boards", filter="open", entity="members")
@@ -89,10 +85,12 @@ def download_image(url):
     return response.content if response.status_code == 200 else None
 
 def upload_custom_board_background(config, settings, member_id, image_content):
-    endpoint = f"{member_id}/customBoardBackgrounds"
-    response = trello_request(config, settings, endpoint, method="POST", entity="members", file=image_content)
+    endpoint = f"members/{member_id}/customBoardBackgrounds"
+    headers = {
+        "Content-Type": "image/png"
+    }
+    response = trello_request(config, settings, endpoint, method="POST", entity="", data=image_content, headers=headers)
     return response.get('id') if response else None
-
 
 def set_custom_board_background(config, settings, board_id, background_id):
     endpoint = f"/boards/{board_id}/prefs/background"
