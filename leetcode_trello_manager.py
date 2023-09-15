@@ -104,6 +104,7 @@ def set_custom_board_background(config, settings, board_id, background_id):
     response = trello_request(config, settings, endpoint, method="PUT", value=background_id)
     return response if response else None
 
+
 def set_board_background(config, settings, board_id):
     member_id = get_member_id(config, settings)
     if not member_id:
@@ -124,7 +125,6 @@ def set_board_background(config, settings, board_id):
     response = set_custom_board_background(config, settings, board_id, background_id)
     if not response:
         logging.error("Failed to set board background image")
-
 
 def generate_leetcode_link(title):
     return f"https://leetcode.com/problems/{title.lower().replace(' ', '-')}/"
