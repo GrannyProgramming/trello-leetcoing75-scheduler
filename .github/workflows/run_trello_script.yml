@@ -1,0 +1,30 @@
+name: Run Trello Script
+
+on:
+  schedule:
+    # This will run at 01:00 UTC every Monday
+    - cron: '0 1 * * MON'
+
+jobs:
+  run_script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+
+    - name: Run Trello script
+      run: python leetcode_trello_manager.py
+      env:
+        API_KEY: ${{ secrets.API_KEY }}
+        OAUTH_TOKEN: ${{ secrets.OAUTH_TOKEN }}
