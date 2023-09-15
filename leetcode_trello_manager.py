@@ -76,7 +76,7 @@ def manage_default_and_required_lists(config, settings, board_id):
     [create_list(config, settings, board_id, required_list) for required_list in required_lists if not check_list_exists(config, settings, board_id, required_list)]
 
 def get_member_id(config, settings):
-    response = trello_request(config, settings, "/members/me")
+    response = trello_request(config, settings, "me", entity="members")
     if response is None:
         logging.error("Failed to fetch member ID.")
         return None
