@@ -71,7 +71,11 @@ def trello_request(
     **kwargs,
 ):
     """Make a request to the Trello API."""
-    resource_url = os.path.join(board_id or "", resource)
+    if board_id:
+        resource_url = os.path.join(board_id, resource.lstrip('/'))
+    else:
+        resource_url = resource.lstrip('/')
+
     url = os.path.join(settings["BASE_URL"], entity, resource_url)
 
     query = {"key": config["API_KEY"], "token": config["OAUTH_TOKEN"], **kwargs}
