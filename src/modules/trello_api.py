@@ -89,10 +89,13 @@ def trello_request(
 def create_board(config, settings, board_name):
     """Create a new Trello board and return its ID."""
     new_board = trello_request(
-        config, settings, resource="boards", method="POST", name=board_name
+        config, settings, resource="/boards", method="POST", name=board_name
     )
 
-    if new_board:
+    # Log the response for debugging
+    logging.info("Response from board creation: %s", new_board)
+
+    if new_board and 'id' in new_board:
         return new_board["id"]
     else:
         logging.error("Failed to create board with name: %s", board_name)
