@@ -48,10 +48,12 @@ def trello_request(config, settings, resource, method="GET", entity="boards", bo
     resource_url = f"{board_id}/{resource}" if board_id else resource
     logging.info(f"Making a request to endpoint: {entity}/{resource_url}")
     url = f"{settings['BASE_URL']}/{entity}/{resource_url}".rstrip('/')
-    logging.info(f"Constructed URL: {url}")
-
     
+    query = {'key': config['API_KEY'], 'token': config['OAUTH_TOKEN'], **kwargs}  # This line was missing
+    
+    logging.info(f"Constructed URL: {url}")
     return make_request(url, method, params=query, data=None, timeout=timeout, files=files)
+
 
 def get_board_id(config, settings, name):
     boards = trello_request(config, settings, "me/boards", filter="open", entity="members")
