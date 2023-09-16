@@ -72,9 +72,9 @@ def trello_request(
 ):
     """Make a request to the Trello API."""
     if board_id:
-        resource_url = os.path.join(board_id, resource.lstrip('/'))
+        resource_url = os.path.join(board_id, resource.lstrip("/"))
     else:
-        resource_url = resource.lstrip('/')
+        resource_url = resource.lstrip("/")
 
     url = os.path.join(settings["BASE_URL"], entity, resource_url)
 
@@ -86,12 +86,30 @@ def trello_request(
     )
 
 
-def get_board_id(config, settings, name):
-    """Retrieve the board ID based on the board name."""
-    boards = trello_request(
-        config, settings, "me/boards", filter="open", entity=TRELLO_ENTITY["MEMBER"]
+def create_board(config, settings, board_name):
+    """Create a new Trello board and return its ID."""
+    new_board = trello_request(
+        config, settings, resource="boards", method="POST", name=board_name
     )
-    return next((board["id"] for board in boards if board["name"] == name), None)
+
+    if new_board:
+        return new_board["id"]
+    else:
+        logging.error("Failed to create board with name: %s", board_name)
+        return None
+
+
+def get_board_id(config, settings, board_name):
+    """Get the board ID given a board name. If the board does not exist, create it."""
+    boards = trello_request(config, settings, resource="members/me/boards")
+
+    if boards:
+        for board in boards:
+            if board["name"] == board_name:
+                return board["id"]
+
+    # If board doesn't exist, create it
+    return create_board(config, settings, board_name)
 
 
 def card_exists(config, settings, board_id, card_name):

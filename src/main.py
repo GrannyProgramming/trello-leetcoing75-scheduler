@@ -37,10 +37,8 @@ if __name__ == "__main__":
     manage_board_lists(board_id)
     create_missing_labels(board_id)
 
-    process_all_problem_cards(
-        config, settings, board_id, topics, current_date
-    )
-    
+    process_all_problem_cards(config, settings, board_id, topics, current_date)
+
     # Process all problem cards for a given board
     process_all_problem_cards(config, settings, board_id, topics, current_date)
     populate_this_week_list(board_id)

@@ -113,15 +113,20 @@ def create_missing_labels(board_id):
                 board_id,
             )
 
+
 def populate_this_week_list(board_id):
     """Populate the 'This Week' list with problems that have the closest due dates."""
-    this_week_list_id = fetch_all_list_ids(config, settings, board_id).get("Do this week")
+    this_week_list_id = fetch_all_list_ids(config, settings, board_id).get(
+        "Do this week"
+    )
     if not this_week_list_id:
         logging.error("Failed to retrieve 'Do this week' list ID.")
         return
 
     # Get cards in the 'This Week' list
-    this_week_cards = trello_request(config, settings, f"/lists/{this_week_list_id}/cards")
+    this_week_cards = trello_request(
+        config, settings, f"/lists/{this_week_list_id}/cards"
+    )
     if not this_week_cards:
         logging.error("Failed to retrieve cards from 'Do this week' list.")
         return
@@ -146,10 +151,6 @@ def populate_this_week_list(board_id):
     for card in sorted_cards[:cards_to_add_count]:
         card_id = card["id"]
         trello_request(
-            config,
-            settings,
-            f"/cards/{card_id}",
-            "PUT",
-            idList=this_week_list_id
+            config, settings, f"/cards/{card_id}", "PUT", idList=this_week_list_id
         )
         logging.info("Moved card %s to 'Do this week' list.", card_id)
