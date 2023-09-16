@@ -42,6 +42,7 @@ def generate_leetcode_link(title):
     """Generate a direct LeetCode problem link based on its title."""
     return f"https://leetcode.com/problems/{title.lower().replace(' ', '-')}/"
 
+
 def compute_due_date(start_date, days):
     """Compute the due date based on a start date and a number of working days."""
     return reduce(
