@@ -169,7 +169,7 @@ def create_labels_for_board(config, settings, board_id):
     label_names = [l.get('name') for l in labels if 'name' in l]
     for label, color in label_colors.items():
         if label not in label_names:
-            trello_request(config, settings, "labels", "POST", entity=f"boards/{board_id}", name=label, color=color)
+            trello_request(config, settings, f"{board_id}/labels", "POST", entity="boards", name=label, color=color)
     logging.info(f"Board ID being passed: {board_id}")
 
 
