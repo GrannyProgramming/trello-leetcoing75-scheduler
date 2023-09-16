@@ -178,54 +178,55 @@ def create_labels_for_board(config, settings, board_id):
             trello_request(config, settings, "labels", "POST", entity="boards", board_id=board_id, name=label, color=color)
     logging.info(f"Board ID being passed: {board_id}")
 
+def create_topic_label(config, settings, board_id, category):
+    return trello_request(config, settings, "/labels", "POST", entity="boards", board_id=board_id, name=category, color="black")
 
+def get_list_name_and_due_date(due_date, current_date):
+    list_name = "Do this week" if is_due_this_week(due_date, current_date) else "Backlog"
+    return list_name, due_date
 
+def create_problem_card(config, settings, board_id, list_ids, label_ids, topic_label_id, category, problem, due_date):
+    card_name = f"{category}: {problem['title']}"
+    if not card_exists(config, settings, board_id, card_name):
+        difficulty_label_id = label_ids.get(problem["difficulty"])
+        if not difficulty_label_id:
+            logging.error(f"Difficulty label not found for problem: {problem['title']}")
+            return
+        link = generate_leetcode_link(problem["title"])
+        list_name, due_date_for_card = get_list_name_and_due_date(due_date, current_date)
+        card_response = trello_request(config, settings, resource="/cards", method="POST", entity="", idList=list_ids.get(list_name), name=card_name, desc=link, idLabels=[difficulty_label_id, topic_label_id], due=due_date_for_card.isoformat())
+        if not card_response:
+            logging.error(f"Failed to create card: {card_name}")
+            return
+        attach_image_to_card(config, settings, card_response['id'], category)
 
 def create_cards_for_board(config, settings, board_id, topics, current_date):
     list_ids_response = trello_request(config, settings, f"{board_id}/lists")
     if list_ids_response is None:
         logging.error(f"Failed to fetch lists for board with ID: {board_id}")
         return
-
     list_ids = {l['name']: l['id'] for l in list_ids_response}
 
     label_ids_response = trello_request(config, settings, f"{board_id}/labels")
     if label_ids_response is None:
         logging.error(f"Failed to fetch labels for board with ID: {board_id}")
         return
-
     label_ids = {l['name']: l['id'] for l in label_ids_response}
     
     all_due_dates = generate_all_due_dates(topics, current_date)
-    due_date_index = 0  # Initialize due_date_index at the beginning of the function
+    due_date_index = 0
 
-    for idx, (category, problems) in enumerate(topics.items()):
-        topic_label_response = trello_request(config, settings, "/labels", "POST", name=category, color="black", idBoard=board_id)
+    for category, problems in topics.items():
+        topic_label_response = create_topic_label(config, settings, board_id, category)
         if topic_label_response is None:
             logging.error(f"Failed to create label for category: {category}")
             continue
-
         topic_label_id = topic_label_response['id']
         for problem in problems:
-            card_name = f"{category}: {problem['title']}"
-            if not card_exists(config, settings, board_id, card_name):
-                difficulty_label_id = label_ids.get(problem["difficulty"])
-                if not difficulty_label_id:
-                    logging.error(f"Difficulty label not found for problem: {problem['title']}")
-                    continue
+            create_problem_card(config, settings, board_id, list_ids, label_ids, topic_label_id, category, problem, all_due_dates[due_date_index])
+            due_date_index += 1
 
-                link = generate_leetcode_link(problem["title"])                
-                list_name = "Do this week" if is_due_this_week(all_due_dates[due_date_index], current_date) else "Backlog"
-                due_date_for_card = all_due_dates[due_date_index]
-                due_date_index += 1
 
-                card_response = trello_request(config, settings, resource="/cards", method="POST", entity="", idList=list_ids.get(list_name), name=card_name, desc=link, idLabels=[difficulty_label_id, topic_label_id], due=due_date_for_card.isoformat())
-                if not card_response:
-                    logging.error(f"Failed to create card: {card_name}")
-                    continue
-
-                # Once the card is created, attach the image to the card
-                attach_image_to_card(config, settings, card_response['id'], category)
 
 
 def process_retrospective_cards(config, settings, board_id, current_date):
