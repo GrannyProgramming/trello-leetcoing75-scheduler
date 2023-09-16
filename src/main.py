@@ -20,7 +20,7 @@ if __name__ == "__main__":
     settings = load_ini_settings()
 
     # Load topics from the JSON file
-    topics_path = os.environ.get("TOPICS_JSON_PATH", "./config/topics.json")
+    topics_path = os.environ.get("TOPICS_JSON_PATH", "./config/leetcode75.json")
     with open(topics_path, "r", encoding="utf-8") as file:
         topics = json.load(file)
 

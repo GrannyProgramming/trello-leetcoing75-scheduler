@@ -36,4 +36,4 @@ jobs:
         API_KEY: ${{ secrets.API_KEY }}
         OAUTH_TOKEN: ${{ secrets.OAUTH_TOKEN }}
         RAW_URL_BASE: ${{ env.RAW_URL_BASE }}
-        TOPICS_JSON_PATH: './config/topics.json' 
+        TOPICS_JSON_PATH: './config/leetcode75.json' 
