@@ -44,10 +44,10 @@ def make_request(url, method, params=None, data=None, timeout=None, files=None):
             logging.error(f"Failed to decode JSON from response. URL: {url}, Response: {response.text}")
             return None
 
-def trello_request(config, settings, resource, method="GET", entity="boards", timeout=None, files=None, **kwargs):
-    logging.info(f"Making a request to endpoint: {entity}/{resource}")
-    url = f"{settings['BASE_URL']}/{entity}/{resource}".rstrip('/')
-    query = {'key': config['API_KEY'], 'token': config['OAUTH_TOKEN'], **kwargs}
+def trello_request(config, settings, resource, method="GET", entity="boards", board_id=None, timeout=None, files=None, **kwargs):
+    resource_url = f"{board_id}/{resource}" if board_id else resource
+    logging.info(f"Making a request to endpoint: {entity}/{resource_url}")
+    url = f"{settings['BASE_URL']}/{entity}/{resource_url}".rstrip('/')
     logging.info(f"Constructed URL: {url}")
 
     
@@ -170,7 +170,7 @@ def create_labels_for_board(config, settings, board_id):
     for label, color in label_colors.items():
         if label not in label_names:
             logging.info(f"Constructed resource string for label creation: {board_id}/labels")
-            trello_request(config, settings, f"{board_id}/labels", "POST", entity="boards", name=label, color=color)
+            trello_request(config, settings, "labels", "POST", entity="boards", board_id=board_id, name=label, color=color)
     logging.info(f"Board ID being passed: {board_id}")
 
 
@@ -244,7 +244,11 @@ def process_retrospective_cards(config, settings, board_id, current_date):
         trello_request(config, settings, f"/cards/{card['id']}", "PUT", idList=list_ids[list_name], due=new_due_date.isoformat())
 
 def process_completed_cards(config, settings, board_id, current_date):
-    list_ids = {l['name']: l['id'] for l in trello_request(config, settings, f"/boards/{board_id}/lists")}
+    lists = trello_request(config, settings, f"/boards/{board_id}/lists")
+    if not lists:
+        logging.error("Failed to fetch lists for the board.")
+        return
+    list_ids = {l['name']: l['id'] for l in lists}
     completed_cards = trello_request(config, settings, f"/lists/{list_ids['Completed']}/cards")
     for card in completed_cards:
         current_due_date = datetime.fromisoformat(card['due'].replace('Z', ''))
