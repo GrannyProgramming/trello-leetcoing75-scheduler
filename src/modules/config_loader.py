@@ -32,7 +32,7 @@ import configparser
 
 def load_ini_settings():
     config = configparser.ConfigParser()
-    config.read("../config/settings.ini")
+    config.read("config/settings.ini")
 
     return {
         "BASE_URL": config["TRELLO"]["BASE_URL"],
