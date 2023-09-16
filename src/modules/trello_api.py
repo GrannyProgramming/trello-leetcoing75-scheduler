@@ -64,7 +64,7 @@ def trello_request(
     settings,
     resource,
     method="GET",
-    entity=TRELLO_ENTITY["BOARD"],
+    entity="",
     board_id=None,
     timeout=None,
     files=None,
