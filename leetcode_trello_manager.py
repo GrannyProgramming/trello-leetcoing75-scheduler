@@ -45,14 +45,15 @@ def make_request(url, method, params=None, data=None, timeout=None, files=None):
             return None
 
 def trello_request(config, settings, resource, method="GET", entity="boards", board_id=None, timeout=None, files=None, **kwargs):
-    resource_url = f"{board_id}/{resource}".strip('/')
+    resource_url = f"{board_id}/{resource}" if board_id else resource
     logging.info(f"board_id: {board_id}")
     logging.info(f"resource: {resource}")
     logging.info(f"Constructed resource_url: {resource_url}")
     logging.info(f"Making a request to endpoint: {entity}/{resource_url}")
     url = f"{settings['BASE_URL']}/{entity}/{resource_url}".rstrip('/')
     
-    query = {'key': config['API_KEY'], 'token': config['OAUTH_TOKEN'], **kwargs}
+    query = {'key': config['API_KEY'], 'token': config['OAUTH_TOKEN'], **kwargs}  # This line was missing
+    
     logging.info(f"Constructed URL: {url}")
     return make_request(url, method, params=query, data=None, timeout=timeout, files=files)
 
@@ -149,10 +150,9 @@ def is_due_this_week(due_date, current_date):
 
 def attach_image_to_card(config, settings, card_id, topic):
     image_url = f"{config['RAW_URL_BASE']}imgs/cards/{topic}.png"
-    response = trello_request(config, settings, f"{card_id}/attachments", "POST", entity="cards", url=image_url)
+    response = trello_request(config, settings, f"/cards/{card_id}/attachments", "POST", url=image_url)
     if not response:
         logging.error(f"Failed to attach image to card {card_id}")
-
 
 def get_next_working_day(date):
     next_day = date + timedelta(days=1)
@@ -161,14 +161,8 @@ def get_next_working_day(date):
     return next_day
 
 def generate_all_due_dates(topics, start_date):
-    due_dates = []
-    current_date = start_date
-    for _ in topics.values():
-        while current_date.weekday() >= 5:  # Skip weekends
-            current_date += timedelta(days=1)
-        due_dates.append(current_date)
-        current_date += timedelta(days=1)
-    return due_dates
+    return reduce(lambda acc, problems: acc + [get_next_working_day(acc[-1])] * len(problems),
+                  topics.values(), [get_next_working_day(start_date)])[:-1]
 
 def create_labels_for_board(config, settings, board_id):
     label_colors = {'Easy': 'green', 'Medium': 'yellow', 'Somewhat know': 'blue', 'Do not know': 'red', 'Know': 'green'}
