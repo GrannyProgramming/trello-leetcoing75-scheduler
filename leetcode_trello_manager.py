@@ -46,6 +46,9 @@ def make_request(url, method, params=None, data=None, timeout=None, files=None):
 
 def trello_request(config, settings, resource, method="GET", entity="boards", board_id=None, timeout=None, files=None, **kwargs):
     resource_url = f"{board_id}/{resource}" if board_id else resource
+    logging.info(f"board_id: {board_id}")
+    logging.info(f"resource: {resource}")
+    logging.info(f"Constructed resource_url: {resource_url}")
     logging.info(f"Making a request to endpoint: {entity}/{resource_url}")
     url = f"{settings['BASE_URL']}/{entity}/{resource_url}".rstrip('/')
     
