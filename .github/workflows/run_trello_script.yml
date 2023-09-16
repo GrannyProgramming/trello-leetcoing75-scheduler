@@ -31,10 +31,9 @@ jobs:
         echo "RAW_URL_BASE=$RAW_URL_BASE" >> $GITHUB_ENV
 
     - name: Run Trello script
-      run: python leetcode_trello_manager.py
+      run: python src/main.py
       env:
         API_KEY: ${{ secrets.API_KEY }}
         OAUTH_TOKEN: ${{ secrets.OAUTH_TOKEN }}
         RAW_URL_BASE: ${{ env.RAW_URL_BASE }}
-        TOPICS_JSON_PATH: 'leetcode75.json'  # add this line
-      
+        TOPICS_JSON_PATH: 'config/topics.json' 
