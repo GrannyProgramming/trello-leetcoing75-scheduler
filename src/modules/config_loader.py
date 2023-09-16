@@ -45,6 +45,7 @@ def load_ini_settings():
         "DEFAULT_LABELS_COLORS": dict(
             item.split(":") for item in config["LABELS"]["DEFAULT_COLORS"].split(", ")
         ),
+        "PROBLEMS_PER_DAY": int(config["PROBLEMS"]["PROBLEMS_PER_DAY"]),
     }
 
 

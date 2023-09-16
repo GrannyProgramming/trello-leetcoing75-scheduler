@@ -85,15 +85,16 @@ def get_next_working_day(date):
     return next_day
 
 
-def generate_all_due_dates(topics, start_date):
-    """Generate all due dates based on topics and a start date."""
+def generate_all_due_dates(topics, current_date, problems_per_day):
     due_dates = []
-    current_date = start_date
-    for _ in topics.values():
-        while current_date.weekday() >= 5:  # Skip weekends
-            current_date += timedelta(days=1)
-        due_dates.append(current_date)
-        current_date += timedelta(days=1)
+    total_problems = sum(len(problems) for problems in topics.values())
+    days_needed = total_problems // problems_per_day
+    day = current_date
+    for _ in range(days_needed):
+        if day.weekday() < 5:  # 0-4 denotes Monday to Friday
+            for _ in range(problems_per_day):
+                due_dates.append(day)
+        day += timedelta(days=1)
     return due_dates
 
 

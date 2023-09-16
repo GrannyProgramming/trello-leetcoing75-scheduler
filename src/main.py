@@ -8,6 +8,7 @@ from modules.board_operations import (
     set_board_background_image,
     manage_board_lists,
     create_missing_labels,
+    populate_this_week_list,
 )
 from modules.card_operations import process_all_problem_cards, retest_cards
 
@@ -38,8 +39,11 @@ if __name__ == "__main__":
 
     process_all_problem_cards(
         config, settings, board_id, topics, current_date
-    )  # corrected this
-
+    )
+    
+    # Process all problem cards for a given board
+    process_all_problem_cards(config, settings, board_id, topics, current_date)
+    populate_this_week_list(board_id)
     # Process cards for retesting
     retest_cards(config, settings, settings["BOARD_NAME"], current_date)
 

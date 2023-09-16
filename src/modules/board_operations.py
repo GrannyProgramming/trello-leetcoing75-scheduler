@@ -31,6 +31,7 @@ Author: Alex McGonigle @grannyprogramming
 
 import logging
 from .utilities import download_image
+from .card_operations import fetch_all_list_ids, parse_card_due_date
 from .trello_api import (
     trello_request,
     get_member_id,
@@ -111,3 +112,44 @@ def create_missing_labels(board_id):
                 color,
                 board_id,
             )
+
+def populate_this_week_list(board_id):
+    """Populate the 'This Week' list with problems that have the closest due dates."""
+    this_week_list_id = fetch_all_list_ids(config, settings, board_id).get("Do this week")
+    if not this_week_list_id:
+        logging.error("Failed to retrieve 'Do this week' list ID.")
+        return
+
+    # Get cards in the 'This Week' list
+    this_week_cards = trello_request(config, settings, f"/lists/{this_week_list_id}/cards")
+    if not this_week_cards:
+        logging.error("Failed to retrieve cards from 'Do this week' list.")
+        return
+
+    # If the list is already populated, exit
+    if len(this_week_cards) >= settings["WORKDAYS"]:
+        return
+
+    # Find the number of cards to add
+    cards_to_add_count = settings["WORKDAYS"] - len(this_week_cards)
+
+    # Fetch all cards from the board
+    all_cards = trello_request(config, settings, f"{board_id}/cards", entity="boards")
+    if not all_cards:
+        logging.error("Failed to retrieve cards.")
+        return
+
+    # Sort cards by due date
+    sorted_cards = sorted(all_cards, key=lambda x: parse_card_due_date(x["due"]))
+
+    # Move the cards with the closest due dates to 'This Week' list
+    for card in sorted_cards[:cards_to_add_count]:
+        card_id = card["id"]
+        trello_request(
+            config,
+            settings,
+            f"/cards/{card_id}",
+            "PUT",
+            idList=this_week_list_id
+        )
+        logging.info("Moved card %s to 'Do this week' list.", card_id)
