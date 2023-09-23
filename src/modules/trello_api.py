@@ -105,15 +105,12 @@ def create_board(config, settings, board_name):
 def get_board_id(config, settings, board_name):
     """Get the board ID given a board name. If the board does not exist, create it."""
     boards = trello_request(config, settings, resource="members/me/boards")
-
-    if boards:
-        for board in boards:
-            if board["name"] == board_name:
-                return board["id"]
-
+    # Check if board with the given name exists
+    board_id = next((board["id"] for board in boards if board["name"] == board_name), None)
     # If board doesn't exist, create it
-    return create_board(config, settings, board_name)
-
+    if not board_id:
+        board_id = create_board(config, settings, board_name)
+    return board_id
 
 def card_exists(config, settings, board_id, card_name):
     """Check if a card exists on the board."""
