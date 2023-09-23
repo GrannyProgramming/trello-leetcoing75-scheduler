@@ -64,7 +64,7 @@ def trello_request(
     settings,
     resource,
     method="GET",
-    entity="",
+    entity="boards",
     board_id=None,
     timeout=None,
     files=None,
@@ -85,6 +85,7 @@ def trello_request(
     return make_request(
         url, method, params=query, timeout=timeout, files=files
     )
+
 
 def construct_url(base_url, entity, resource_url):
     """
