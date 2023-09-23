@@ -71,22 +71,18 @@ def trello_request(
     **kwargs,
 ):
     if board_id:
-        resource_url = os.path.join(board_id, resource.lstrip("/"))
+        resource_url = f"{board_id}/{resource.lstrip('/')}"
     else:
         resource_url = resource.lstrip("/")
 
-    url = os.path.join(settings["BASE_URL"], entity, resource_url)
+    url = f"{settings['BASE_URL']}/{entity}/{resource_url}"
 
     query = {"key": config["API_KEY"], "token": config["OAUTH_TOKEN"]}
-    
-    # Modify this section to accommodate POST data if method is "POST"
-    data = kwargs if method == "POST" else None
-    if method != "POST":
-        query.update(kwargs)
+    query.update(kwargs)  # Always add the kwargs to the query parameters
 
     logging.info("Making a request to endpoint: %s with method: %s", method, url)
     return make_request(
-        url, method, params=query, data=data, timeout=timeout, files=files
+        url, method, params=query, timeout=timeout, files=files
     )
 
 
