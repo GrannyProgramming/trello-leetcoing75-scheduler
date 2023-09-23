@@ -64,20 +64,23 @@ def construct_url(base_url, entity, resource, board_id=None, list_id=None):
     Construct the URL by joining base_url, entity, board_id (if provided), list_id (if provided), and resource.
     Ensure that there are no double slashes.
     """
-    # Start with base URL and entity
-    segments = [base_url.rstrip('/'), entity]
+    # Start with base URL
+    segments = [base_url.rstrip('/')]
 
-    # Add board_id and list_id if they are provided
-    if board_id:
-        segments.append(board_id)
-    if list_id:
-        segments.append(list_id)
+    # Depending on the entity, determine the order
+    if entity == "boards" and board_id:
+        segments.extend([entity, board_id])
+    elif entity == "lists" and list_id:
+        segments.extend([entity, list_id])
+    else:
+        segments.append(entity)
 
-    # Add the resource at the end
+    # Finally, append the resource
     segments.append(resource.lstrip('/'))
 
-    # Join all segments
     return '/'.join(segments)
+
+
 
 
 

@@ -211,8 +211,9 @@ def process_retrospective_cards(config, settings, board_id, current_date):
     """Process the retrospective cards."""
     list_ids = fetch_all_list_ids(config, settings, board_id)
     retrospective_cards = trello_request(
-        config, settings, f"/lists/{list_ids['Retrospective']}/cards"
+        config, settings, "cards", entity="lists", list_id=list_ids['Retrospective']
     )
+
 
     if retrospective_cards:
         for card in retrospective_cards:
@@ -236,7 +237,7 @@ def process_completed_cards(config, settings, board_id, current_date):
     """Move completed cards that are due this week to the 'Do this week' list."""
     list_ids = fetch_all_list_ids(config, settings, board_id)
     completed_cards = trello_request(
-        config, settings, f"/lists/{list_ids['Completed']}/cards"
+        config, settings, "cards", entity="lists", list_id=list_ids["Completed"]
     )
 
     for card in completed_cards:
