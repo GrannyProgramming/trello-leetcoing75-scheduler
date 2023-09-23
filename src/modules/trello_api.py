@@ -74,8 +74,9 @@ def trello_request(
         resource_url = f"{board_id}/{resource.lstrip('/')}"
     else:
         resource_url = resource.lstrip("/")
-
-    url = f"{settings['BASE_URL']}/{entity}/{resource_url}"
+    
+    # Use the construct_url function to build the URL
+    url = construct_url(settings['BASE_URL'], entity, resource_url)
 
     query = {"key": config["API_KEY"], "token": config["OAUTH_TOKEN"]}
     query.update(kwargs)  # Always add the kwargs to the query parameters
@@ -84,6 +85,15 @@ def trello_request(
     return make_request(
         url, method, params=query, timeout=timeout, files=files
     )
+
+def construct_url(base_url, entity, resource_url):
+    """
+    Construct the URL by joining base_url, entity, and resource_url.
+    Ensure that there are no double slashes.
+    """
+    # Filter out any empty segments to avoid double slashes.
+    segments = filter(None, [base_url.rstrip('/'), entity, resource_url.lstrip('/')])
+    return '/'.join(segments)
 
 
 def create_board(config, settings, board_name):
