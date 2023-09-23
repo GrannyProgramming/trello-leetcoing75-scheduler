@@ -214,6 +214,7 @@ def process_retrospective_cards(config, settings, board_id, current_date):
         config, settings, f"/lists/{list_ids['Retrospective']}/cards"
     )
 
+
     for card in retrospective_cards:
         label_names = [label["name"] for label in card["labels"]]
         new_due_date, list_name = determine_new_due_date_and_list(
@@ -237,6 +238,7 @@ def process_completed_cards(config, settings, board_id, current_date):
     completed_cards = trello_request(
         config, settings, f"/lists/{list_ids['Completed']}/cards"
     )
+
     for card in completed_cards:
         if is_due_this_week(parse_card_due_date(card["due"]), current_date):
             trello_request(
