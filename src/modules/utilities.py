@@ -61,24 +61,24 @@ def is_due_this_week(due_date, current_date):
 
 def construct_url(base_url, entity, resource, board_id=None, list_id=None):
     """
-    Construct the URL based on the provided parameters.
+    Construct the URL by joining base_url, entity, board_id (if provided), list_id (if provided), and resource.
+    Ensure that there are no double slashes.
     """
-    # Start with the base URL
-    segments = [base_url.rstrip('/')]
+    # Start with base URL and entity
+    segments = [base_url.rstrip('/'), entity]
 
-    # If entity is "members", append "me" since it's a special case
-    if entity == "members":
-        segments.append("members/me")
-    else:
-        # If board_id and list_id are provided, use the format for cards within a list
-        if board_id and list_id:
-            segments.append(f"lists/{list_id}")
-        # If only board_id is provided, use the format for lists or labels within a board
-        elif board_id:
-            segments.append(f"boards/{board_id}")
-        # If neither is provided, append the entity directly
-        else:
-            segments.append(entity)
+    # Add board_id and list_id if they are provided
+    if board_id:
+        segments.append(board_id)
+    if list_id:
+        segments.append(list_id)
+
+    # Add the resource at the end
+    segments.append(resource.lstrip('/'))
+
+    # Filter out any empty segments to avoid double slashes and join.
+    return '/'.join(filter(None, segments))
+
     
     # Finally, append the resource
     segments.append(resource.lstrip('/'))
