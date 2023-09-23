@@ -92,18 +92,20 @@ def trello_request(
 
 def create_board(config, settings, board_name):
     """Create a new Trello board and return its ID."""
-    # Note the change in the resource argument below
     new_board = trello_request(
         config, settings, resource="boards", method="POST", name=board_name
     )
 
+    # Log the response for debugging
     logging.info("Response from board creation: %s", new_board)
 
     if new_board and 'id' in new_board:
+        logging.info("Successfully created board with ID: %s", new_board["id"])
         return new_board["id"]
     else:
         logging.error("Failed to create board with name: %s", board_name)
         return None
+
 
 
 def get_board_id(config, settings, board_name):
@@ -114,6 +116,11 @@ def get_board_id(config, settings, board_name):
     # If board doesn't exist, create it
     if not board_id:
         board_id = create_board(config, settings, board_name)
+    if board_id:
+        logging.info("Created a new board with ID: %s", board_id)
+    else:
+        logging.error("Board creation failed.")
+    
     return board_id
 
 def card_exists(config, settings, board_id, card_name):
