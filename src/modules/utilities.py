@@ -76,13 +76,7 @@ def construct_url(base_url, entity, resource, board_id=None, list_id=None):
     # Add the resource at the end
     segments.append(resource.lstrip('/'))
 
-    # Filter out any empty segments to avoid double slashes and join.
-    return '/'.join(filter(None, segments))
-
-    
-    # Finally, append the resource
-    segments.append(resource.lstrip('/'))
-
+    # Join all segments
     return '/'.join(segments)
 
 
