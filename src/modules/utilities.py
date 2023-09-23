@@ -59,6 +59,16 @@ def is_due_this_week(due_date, current_date):
     return start_of_week <= due_date <= end_of_week
 
 
+def construct_url(base_url, entity, resource_url):
+    """
+    Construct the URL by joining base_url, entity, and resource_url.
+    Ensure that there are no double slashes.
+    """
+    # Filter out any empty segments to avoid double slashes.
+    segments = filter(None, [base_url.rstrip('/'), entity, resource_url.lstrip('/')])
+    return '/'.join(segments)
+
+
 def download_image(url, filepath="tmp_image.png"):
     """Download an image from a given URL and save it to a specified path."""
     try:

@@ -22,7 +22,8 @@ def load_ini_settings():
         'START_DAY': int(config['WEEK']['START_DAY']),
         'END_DAY': int(config['WEEK']['END_DAY']),
         'WORKDAYS': int(config['WEEK']['WORKDAYS']),
-        'DEFAULT_LABELS_COLORS': dict(item.split(':') for item in config['LABELS']['DEFAULT_COLORS'].split(', '))
+        'DEFAULT_LABELS_COLORS': dict(item.split(':') for item in config['LABELS']['DEFAULT_COLORS'].split(', ')),
+        'PROBLEMS_PER_DAY' : int(config['DEFAULT']['problems_per_day'])
     }
 
 def load_config():

@@ -37,7 +37,7 @@ Author: Alex McGonigle @grannyprogramming
 import logging
 import os
 import requests
-
+from .utilities import construct_url
 # Constants
 TRELLO_ENTITY = {"BOARD": "boards", "MEMBER": "members", "LIST": "lists"}
 
@@ -86,15 +86,6 @@ def trello_request(
         url, method, params=query, timeout=timeout, files=files
     )
 
-
-def construct_url(base_url, entity, resource_url):
-    """
-    Construct the URL by joining base_url, entity, and resource_url.
-    Ensure that there are no double slashes.
-    """
-    # Filter out any empty segments to avoid double slashes.
-    segments = filter(None, [base_url.rstrip('/'), entity, resource_url.lstrip('/')])
-    return '/'.join(segments)
 
 
 def create_board(config, settings, board_name):

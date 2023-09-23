@@ -150,7 +150,7 @@ def process_all_problem_cards(config, settings, board_id, topics, current_date):
     """Process all problem cards for a given board."""
     list_ids = fetch_all_list_ids(config, settings, board_id)
     label_ids = fetch_all_label_ids(config, settings, board_id)
-    all_due_dates = generate_all_due_dates(topics, current_date)
+    all_due_dates = generate_all_due_dates(topics, current_date, settings["PROBLEMS_PER_DAY"])
     due_date_index = 0
 
     for category, problems in topics.items():
