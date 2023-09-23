@@ -108,7 +108,7 @@ def create_board(config, settings, board_name):
 
 def get_board_id(config, settings, board_name):
     """Get the board ID given a board name. If the board does not exist, create it."""
-    boards = trello_request(config, settings, resource="members/me/boards")
+    boards = trello_request(config, settings, resource="me/boards", entity="members")
     # Check if board with the given name exists
     board_id = next((board["id"] for board in boards if board["name"] == board_name), None)
     # If board doesn't exist, create it
