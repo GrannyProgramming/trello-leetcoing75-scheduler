@@ -59,21 +59,31 @@ def is_due_this_week(due_date, current_date):
     return start_of_week <= due_date <= end_of_week
 
 
-def construct_url(base_url, resource, board_id=None, list_id=None):
+def construct_url(base_url, entity, resource, board_id=None, list_id=None):
     """
     Construct the URL based on the provided parameters.
     """
-    if board_id and list_id:
-        # If both board_id and list_id are provided, use the format for cards within a list
-        resource_url = f"lists/{list_id}/{resource.lstrip('/')}"
-    elif board_id:
-        # If only board_id is provided, use the format for lists or labels within a board
-        resource_url = f"boards/{board_id}/{resource.lstrip('/')}"
-    else:
-        # If neither is provided, use the resource directly
-        resource_url = resource.lstrip('/')
+    # Start with the base URL
+    segments = [base_url.rstrip('/')]
 
-    return f"{base_url.rstrip('/')}/{resource_url}"
+    # If entity is "members", append "me" since it's a special case
+    if entity == "members":
+        segments.append("members/me")
+    else:
+        # If board_id and list_id are provided, use the format for cards within a list
+        if board_id and list_id:
+            segments.append(f"lists/{list_id}")
+        # If only board_id is provided, use the format for lists or labels within a board
+        elif board_id:
+            segments.append(f"boards/{board_id}")
+        # If neither is provided, append the entity directly
+        else:
+            segments.append(entity)
+    
+    # Finally, append the resource
+    segments.append(resource.lstrip('/'))
+
+    return '/'.join(segments)
 
 
 
