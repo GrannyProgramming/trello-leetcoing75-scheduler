@@ -64,8 +64,13 @@ def construct_url(base_url, entity, resource_url):
     Construct the URL by joining base_url, entity, and resource_url.
     Ensure that there are no double slashes.
     """
-    # Filter out any empty segments to avoid double slashes.
-    segments = filter(None, [base_url.rstrip('/'), entity, resource_url.lstrip('/')])
+    # If the entity is 'lists' and the resource ends with 'cards', handle the special case.
+    if entity == "lists" and resource_url.endswith("/cards"):
+        segments = [base_url.rstrip('/'), entity, resource_url]
+    else:
+        # Default behavior
+        segments = filter(None, [base_url.rstrip('/'), entity, resource_url.lstrip('/')])
+    
     return '/'.join(segments)
 
 

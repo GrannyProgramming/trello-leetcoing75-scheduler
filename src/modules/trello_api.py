@@ -70,14 +70,13 @@ def trello_request(
     files=None,
     **kwargs,
 ):
+    # If a board_id is provided, prepend it to the resource_url
     if board_id:
-        resource_url = f"{board_id}/{resource.lstrip('/')}"
-    else:
-        resource_url = resource.lstrip("/")
+        resource = f"{board_id}/{resource.lstrip('/')}"
     
-    # Use the construct_url function to build the URL
-    url = construct_url(settings['BASE_URL'], entity, resource_url)
-
+    # Construct the URL
+    url = construct_url(settings['BASE_URL'], entity, resource)
+    
     query = {"key": config["API_KEY"], "token": config["OAUTH_TOKEN"]}
     query.update(kwargs)  # Always add the kwargs to the query parameters
 

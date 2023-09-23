@@ -214,22 +214,22 @@ def process_retrospective_cards(config, settings, board_id, current_date):
         config, settings, f"/lists/{list_ids['Retrospective']}/cards"
     )
 
-
-    for card in retrospective_cards:
-        label_names = [label["name"] for label in card["labels"]]
-        new_due_date, list_name = determine_new_due_date_and_list(
-            label_names, current_date
-        )
-        if not list_name:
-            continue
-        trello_request(
-            config,
-            settings,
-            f"/cards/{card['id']}",
-            "PUT",
-            idList=list_ids[list_name],
-            due=new_due_date.isoformat(),
-        )
+    if retrospective_cards:
+        for card in retrospective_cards:
+            label_names = [label["name"] for label in card["labels"]]
+            new_due_date, list_name = determine_new_due_date_and_list(
+                label_names, current_date
+            )
+            if not list_name:
+                continue
+            trello_request(
+                config,
+                settings,
+                f"/cards/{card['id']}",
+                "PUT",
+                idList=list_ids[list_name],
+                due=new_due_date.isoformat(),
+            )
 
 
 def process_completed_cards(config, settings, board_id, current_date):
