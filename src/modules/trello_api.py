@@ -70,7 +70,6 @@ def trello_request(
     files=None,
     **kwargs,
 ):
-    """Make a request to the Trello API."""
     if board_id:
         resource_url = os.path.join(board_id, resource.lstrip("/"))
     else:
@@ -78,21 +77,26 @@ def trello_request(
 
     url = os.path.join(settings["BASE_URL"], entity, resource_url)
 
-    query = {"key": config["API_KEY"], "token": config["OAUTH_TOKEN"], **kwargs}
+    query = {"key": config["API_KEY"], "token": config["OAUTH_TOKEN"]}
+    
+    # Modify this section to accommodate POST data if method is "POST"
+    data = kwargs if method == "POST" else None
+    if method != "POST":
+        query.update(kwargs)
 
     logging.info("Making a request to endpoint: %s with method: %s", method, url)
     return make_request(
-        url, method, params=query, data=None, timeout=timeout, files=files
+        url, method, params=query, data=data, timeout=timeout, files=files
     )
 
 
 def create_board(config, settings, board_name):
     """Create a new Trello board and return its ID."""
+    # Note the change in the resource argument below
     new_board = trello_request(
-        config, settings, resource="/boards", method="POST", name=board_name
+        config, settings, resource="boards", method="POST", name=board_name
     )
 
-    # Log the response for debugging
     logging.info("Response from board creation: %s", new_board)
 
     if new_board and 'id' in new_board:
