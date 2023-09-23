@@ -74,6 +74,7 @@ def construct_url(base_url, entity, resource_url):
     return '/'.join(segments)
 
 
+
 def download_image(url, filepath="tmp_image.png"):
     """Download an image from a given URL and save it to a specified path."""
     try:
