@@ -59,6 +59,7 @@ def is_due_this_week(due_date, current_date):
     return start_of_week <= due_date <= end_of_week
 
 
+
 def construct_url(base_url, entity, resource, board_id=None, list_id=None):
     """
     Construct the URL by joining base_url, entity, board_id (if provided), list_id (if provided), and resource.
@@ -67,7 +68,9 @@ def construct_url(base_url, entity, resource, board_id=None, list_id=None):
     # Start with base URL
     segments = [base_url.rstrip('/')]
 
-    # Depending on the entity, determine the order
+    # Logging the received values
+    logging.info(f"Entity: {entity}, Board ID: {board_id}, List ID: {list_id}, Resource: {resource}")
+
     if entity == "boards" and board_id:
         segments.extend([entity, board_id])
     elif entity == "lists" and list_id:
@@ -78,7 +81,12 @@ def construct_url(base_url, entity, resource, board_id=None, list_id=None):
     # Finally, append the resource
     segments.append(resource.lstrip('/'))
 
-    return '/'.join(segments)
+    constructed_url = '/'.join(segments)
+    
+    # Logging the final constructed URL
+    logging.info(f"Constructed URL: {constructed_url}")
+    
+    return constructed_url
 
 
 
