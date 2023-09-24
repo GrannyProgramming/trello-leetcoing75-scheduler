@@ -66,9 +66,9 @@ def construct_url(base_url, entity, resource, **kwargs):
     # Add the entity, board_id, list_id, and resource to the components
     url_components.extend([
         kwargs.get('entity', entity),
-        kwargs.get('board_id', '').rstrip('/'),  # Ensure there's no trailing slash
-        kwargs.get('list_id', '').rstrip('/'),   # Ensure there's no trailing slash
-        kwargs.get('card_id', '').rstrip('/'),   # Ensure there's no trailing slash
+        kwargs.get('board_id', '') and kwargs.get('board_id').rstrip('/'),  # Ensure there's no trailing slash
+        kwargs.get('list_id', '') and kwargs.get('list_id').rstrip('/'),   # Ensure there's no trailing slash
+        kwargs.get('card_id', '') and kwargs.get('card_id').rstrip('/'),   # Ensure there's no trailing slash
         resource
     ])
 
@@ -76,6 +76,7 @@ def construct_url(base_url, entity, resource, **kwargs):
     cleaned_url = '/'.join(filter(None, url_components))
     
     return cleaned_url
+
 
 
 
