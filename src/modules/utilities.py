@@ -55,23 +55,23 @@ def construct_url(base_url, entity, resource, **kwargs):
     Construct the URL by joining base_url, entity, board_id (if provided), list_id (if provided), and resource.
     Ensure that there are no double slashes.
     """
-    # Create a pattern where we have placeholders for every part of the URL
-    url_pattern = "{base_url}/{entity}/{board_id}/{list_id}/{card_id}/{resource}"
-    
-    # Fill in the placeholders with actual values or leave them blank
-    constructed_url = url_pattern.format(
-        base_url=base_url,
-        entity=entity or "",
-        board_id=kwargs.get('board_id', "") or "",
-        list_id=kwargs.get('list_id', "") or "",
-        card_id=kwargs.get('card_id', "") or "",
-        resource=resource or ""
-    )
-    
-    # Clean up the URL by removing any 'empty' path elements and ensure that the components are strings
-    cleaned_url = '/'.join(filter(None, [str(comp) if comp is not None else "" for comp in constructed_url.split('/')]))
+    # Prepare a list to hold all components of the URL.
+    url_components = [base_url.rstrip('/')]  # Ensure base_url doesn't end with a slash
+
+    # Add the entity, board_id, list_id, and resource to the components
+    url_components.extend([
+        kwargs.get('entity', entity),
+        kwargs.get('board_id'),
+        kwargs.get('list_id'),
+        kwargs.get('card_id'),
+        resource
+    ])
+
+    # Filter out None or empty components and join them with '/'
+    cleaned_url = '/'.join(filter(None, url_components))
     
     return cleaned_url
+
 
 
 
