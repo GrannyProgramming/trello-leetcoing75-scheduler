@@ -302,11 +302,14 @@ def process_retrospective_cards(config, settings, board_id, current_date):
             )
             if not list_name:
                 continue
+            
+            # Update the card's list and due date
             trello_request(
                 config,
                 settings,
-                f"/cards/{card['id']}",
+                card['id'],             
                 "PUT",
+                entity="cards",         
                 idList=list_ids[list_name],
                 due=new_due_date.isoformat(),
             )
