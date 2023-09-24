@@ -249,8 +249,9 @@ def move_card_to_list(config, settings, card_id, target_list_id):
     trello_request(
         config,
         settings,
-        f"/cards/{card_id}",
+        card_id,  # Just use the card_id as the resource.
         "PUT",
+        entity="cards",  # Explicitly mention the entity here.
         idList=target_list_id
     )
     logging.info("Moved card with ID %s to list with ID %s.", card_id, target_list_id)
