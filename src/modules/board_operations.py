@@ -128,11 +128,13 @@ def manage_this_week_list(local_config, local_settings, board_id):
     
     # Fetch list IDs and get the ID for "To Do this Week"
     list_ids = fetch_all_list_ids(local_config, local_settings, board_id)
-    to_do_this_week_id = list_ids.get("To Do this Week")
+    to_do_this_week_name = settings["REQUIRED_LISTS"][2]  
+    to_do_this_week_id = list_ids.get(to_do_this_week_name)
+
     
     # Fetch and filter cards
     cards = fetch_cards_from_list(local_config, local_settings, to_do_this_week_id)
-    filtered_cards = filter_cards_by_label(cards)
+    filtered_cards = filter_cards_by_label(cards, local_settings)
 
     # Calculate the number of cards to pull
     cards_to_pull_count = max_cards - len(filtered_cards)

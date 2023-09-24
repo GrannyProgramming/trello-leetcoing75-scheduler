@@ -85,6 +85,8 @@ def trello_request(
     )
 
 
+
+
 def create_board(config, settings, board_name):
     """Create a new Trello board and return its ID."""
     new_board = trello_request(
@@ -101,35 +103,27 @@ def create_board(config, settings, board_name):
         logging.error("Failed to create board with name: %s", board_name)
         return None
 
-
 def get_board_id(config, settings, board_name):
     """Get the board ID given a board name. If the board does not exist or is closed, create it."""
     boards = trello_request(config, settings, resource="me/boards", entity="members")
     
-    if not boards:
-        logging.error("Failed to retrieve boards. Check API response.")
-        return None
-
-    # Log the boards for debugging
-    logging.info("Retrieved boards: %s", boards)
-
     # Check if an open board with the given name exists
     board_id = next((board["id"] for board in boards if board["name"] == board_name and not board["closed"]), None)
     
     # If board doesn't exist or is closed, create it
     if not board_id:
         board_id = create_board(config, settings, board_name)
-        if board_id:
-            logging.info("Created a new board with ID: %s", board_id)
-        else:
-            logging.error("Board creation failed.")
+        logging.info("Created a new board with ID: %s", board_id)
     else:
         logging.info("Using existing board with ID: %s", board_id)
+
+    if not board_id:
+        logging.error("Failed to find or create a board with name: %s", board_name)
 
     return board_id
 
     
-    return board_id
+
 
 def card_exists(config, settings, board_id, card_name):
     """Check if a card exists on the board."""

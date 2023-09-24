@@ -213,13 +213,16 @@ def parse_card_due_date(card_due):
     return datetime.fromisoformat(card_due.replace("Z", ""))
 
 
-def filter_cards_by_label(cards):
+def filter_cards_by_label(cards, settings):
     """Filter out cards with specific labels."""
     if not cards:
         return []
 
+    # Extracting the label names from the settings
+    exclude_labels = set(key for key, _ in settings["DEFAULT_LABELS_COLORS"].items())
+
     return [
-        card for card in cards if not set(["Somewhat know", "Do not know", "Know"]) & set(card["labels"])
+        card for card in cards if not exclude_labels & {label["name"] for label in card["labels"]}
     ]
 
 
@@ -236,7 +239,8 @@ def apply_changes_to_board(config, settings, list_ids, cards_to_add):
         current_cards = []
 
     # Filter out the cards that have the labels "Somewhat know:blue", "Do not know:red", and "Know:green".
-    filtered_cards = filter_cards_by_label(current_cards)
+    filtered_cards = filter_cards_by_label(current_cards, settings)
+
 
     # Calculate how many more cards are needed in the "Do this week" list to meet the weekly quota.
     cards_needed = get_max_cards_for_week(settings) - len(filtered_cards)
@@ -283,10 +287,10 @@ def move_card_to_list(config, settings, card_id, target_list_id):
 def process_retrospective_cards(config, settings, board_id, current_date):
     """Process the retrospective cards."""
     list_ids = fetch_all_list_ids(config, settings, board_id)
+    retrospective_list_name = settings["REQUIRED_LISTS"][1]  # "Retrospective"
     retrospective_cards = trello_request(
-        config, settings, "cards", entity="lists", list_id=list_ids['Retrospective']
+        config, settings, "cards", entity="lists", list_id=list_ids[retrospective_list_name]
     )
-
 
     if retrospective_cards:
         for card in retrospective_cards:
@@ -309,8 +313,9 @@ def process_retrospective_cards(config, settings, board_id, current_date):
 def process_completed_cards(config, settings, board_id, current_date):
     """Move completed cards that are due this week to the 'Do this week' list."""
     list_ids = fetch_all_list_ids(config, settings, board_id)
+    completed_list_name = settings["REQUIRED_LISTS"][0]  # Assuming "Completed" is the first item in REQUIRED_LISTS
     completed_cards = trello_request(
-        config, settings, "cards", entity="lists", list_id=list_ids["Completed"]
+        config, settings, "cards", entity="lists", list_id=list_ids[completed_list_name]
     )
 
     for card in completed_cards:
