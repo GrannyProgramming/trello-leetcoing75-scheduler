@@ -193,4 +193,8 @@ def set_custom_board_background(config, settings, board_id, background_id):
 def fetch_cards_from_list(config, settings, list_id):
     """Fetch all cards from a given list."""
     logging.debug("Fetching cards for list_id: %s", list_id)
+    if not list_id:
+        logging.error("list_id is not provided when trying to fetch cards from a list.")
+        return None
     return trello_request(config, settings, "cards", entity="lists", list_id=list_id)
+
