@@ -58,7 +58,7 @@ logging.basicConfig(
 
 def fetch_all_list_ids(config, settings, board_id):
     """Retrieve all list IDs for a given board."""
-    response = trello_request(config, settings, f"{board_id}/lists")
+    response = trello_request(config, settings, "lists", entity="boards", board_id=board_id)
     if response is None:
         logging.error("Failed to fetch lists for board with ID: %s", board_id)
         return {}
@@ -67,7 +67,7 @@ def fetch_all_list_ids(config, settings, board_id):
 
 def fetch_all_label_ids(config, settings, board_id):
     """Retrieve all label IDs for a given board."""
-    response = trello_request(config, settings, f"{board_id}/labels")
+    response = trello_request(config, settings, "labels", entity="boards", board_id=board_id)
     if response is None:
         logging.error("Failed to fetch labels for board with ID: %s", board_id)
         return {}
