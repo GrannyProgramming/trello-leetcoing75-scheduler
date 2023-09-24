@@ -58,11 +58,14 @@ logging.basicConfig(
 
 def fetch_all_list_ids(config, settings, board_id):
     """Retrieve all list IDs for a given board."""
-    response = trello_request(config, settings, "lists", entity="boards", board_id=board_id)
+    response = trello_request(config, settings, f"{board_id}/lists")
     if response is None:
         logging.error("Failed to fetch lists for board with ID: %s", board_id)
         return {}
-    return {l["name"]: l["id"] for l in response}
+    list_ids = {l["name"]: l["id"] for l in response}
+    logging.debug("Fetched list IDs: %s", list_ids)
+    return list_ids
+
 
 
 def fetch_all_label_ids(config, settings, board_id):
@@ -221,7 +224,7 @@ def filter_cards_by_label(cards):
 
 def apply_changes_to_board(config, settings, list_ids, cards_to_add):
     """Apply the necessary changes to the Trello board (like pulling cards from backlog)."""
-    to_do_this_week_id = list_ids.get("To Do this Week")
+    to_do_this_week_id = list_ids.get("Do this week")
     
     for _ in range(cards_to_add):
         top_card = get_top_card_from_backlog(config, settings, list_ids)
@@ -236,6 +239,9 @@ def get_top_card_from_backlog(config, settings, list_ids):
     Get the top card from the 'Backlog' list.
     """
     backlog_id = list_ids.get("Backlog")
+    if not backlog_id:
+        logging.error("Backlog ID not found when trying to get the top card.")
+        return None
     backlog_cards = fetch_cards_from_list(config, settings, backlog_id)
     if not backlog_cards:
         logging.warning("No cards found in the 'Backlog' list.")
