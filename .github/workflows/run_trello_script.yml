@@ -5,6 +5,7 @@ on:
     # This will run at 01:00 UTC every Monday
     - cron: '0 1 * * MON'
   workflow_dispatch: # This allows manual triggering
+  push:
 
 jobs:
   run_script:
