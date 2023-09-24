@@ -28,8 +28,7 @@ from modules.board_operations import (
     manage_board_lists,
     create_missing_labels,
 )
-from modules.utilities import process_all_problem_cards
-from modules.card_operations import manage_this_week_list, retest_cards
+from modules.card_operations import manage_this_week_list, retest_cards, process_all_problem_cards
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
