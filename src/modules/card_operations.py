@@ -218,12 +218,14 @@ def filter_cards_by_label(cards, settings):
     if not cards:
         return []
 
-    # Extracting the label names from the settings
-    exclude_labels = set(key for key, _ in settings["DEFAULT_LABELS_COLORS"].items())
+    # Extracting the label names from the settings without considering the colors
+    exclude_labels = set(label_name for label_name, _ in settings["DEFAULT_LABELS_COLORS"].items() if label_name in ["Somewhat know", "Do not know", "Know"])
 
+    # Filter out cards that have any of the excluded labels
     return [
         card for card in cards if not exclude_labels & {label["name"] for label in card["labels"]}
     ]
+
 
 
 def apply_changes_to_board(config, settings, list_ids, cards_to_add):
