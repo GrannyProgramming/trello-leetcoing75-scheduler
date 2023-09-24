@@ -73,14 +73,18 @@ def construct_url(base_url, entity, resource, **kwargs):
     if 'card_id' in kwargs and kwargs['card_id']:
         url_components.append(kwargs['card_id'])
     
-    # Add the resource
-    url_components.append(resource)
+    # Add the resource without any leading slash
+    url_components.append(resource.lstrip('/'))
+    
+    # Debug logs to identify the issue
+    logging.debug("URL Components before cleaning: %s", url_components)
     
     # Filter out None or empty components and join them with '/'
     cleaned_url = '/'.join(filter(None, url_components))
     
     logging.debug("Constructed URL: %s", cleaned_url)
     return cleaned_url
+
 
 
 
