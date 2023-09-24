@@ -1,36 +1,38 @@
 """
-Utilities for LeetCode Trello Automation.
+LeetCode Trello Utilities Module.
 
-This module provides utility functions designed to support operations related to automating
-LeetCode tasks on Trello. The utilities range from generating LeetCode links, computing 
-due dates, checking if a task is due in the current week, downloading images from URLs,
-identifying the next working day, and more.
+This module offers utility functions tailored for managing LeetCode problem cards on Trello.
+It facilitates operations such as processing single or multiple problem cards, determining due dates, 
+parsing and managing dates, and more.
 
 Functions:
-    - generate_leetcode_link: Constructs a URL link for a given LeetCode problem title.
-    - compute_due_date: Calculates the due date based on a start date and a given number of days, considering working days.
-    - is_due_this_week: Checks if a specified due date falls within the current week.
-    - download_image: Downloads an image from a given URL and saves it to a specified filepath.
-    - get_next_working_day: Identifies the next working day after a given date.
-    - generate_all_due_dates: Generates a list of due dates for a given set of topics, starting from a specified date.
-    - get_list_name_and_due_date: Determines the appropriate list name (e.g., 'Do this week' or 'Backlog') for a given due date.
+    - generate_leetcode_link(title): Generates a direct link to a LeetCode problem based on its title.
+    - process_single_problem_card(_config, _settings, board_id, list_ids, label_ids, topic_label_id, category, problem, due_date, current_date): Creates a Trello card for a single LeetCode problem.
+    - process_all_problem_cards(_config, _settings, board_id, topics, current_date): Processes all problem cards for a given board.
+    - generate_all_due_dates(topics, current_date, problems_per_day): Generates due dates for every problem, taking into account weekdays.
+    - get_list_name_and_due_date(due_date, current_date): Determines the appropriate list name and due date based on the current date.
+    - is_due_this_week(due_date, current_date): Checks if a specified due date falls within the current week.
+    - get_next_working_day(date): Returns the next working day after a given date, excluding weekends.
+    - get_max_cards_for_week(_settings): Calculates the maximum number of cards for the week.
+    - determine_new_due_date_and_list(label_names, current_date): Determines the new due date and list for a card based on its labels.
+    - parse_card_due_date(card_due): Parses the 'due' date of a card into a datetime object.
 
 Dependencies:
     - logging: Used for logging information and error messages.
-    - requests: Used to send HTTP requests and download content.
-    - datetime: Used for date and time-related operations.
-    - functools: Used for higher-order functions and operations on callable objects.
-
-Note:
-    Ensure that when using the `download_image` function, you have permission to access and download the content from the specified URL.
+    - datetime: Used for date operations and manipulations.
+    - .card_operations: Contains utility functions related to card operations.
+    - .trello_api: Houses Trello-specific API functions.
+    - .board_operations: Provides functions for board-related operations.
 
 Author: Alex McGonigle @grannyprogramming
 """
 
-import logging
-from datetime import timedelta
-import requests
 
+import logging
+from datetime import timedelta, datetime
+from .card_operations import card_exists, attach_image_to_card, create_topic_label
+from .trello_api import trello_request
+from .board_operations import fetch_all_list_ids, fetch_all_label_ids
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -42,76 +44,82 @@ def generate_leetcode_link(title):
     return f"https://leetcode.com/problems/{title.lower().replace(' ', '-')}/"
 
 
-def is_due_this_week(due_date, current_date):
-    """Determine if a given due date falls within the current week."""
-    start_of_week = current_date - timedelta(days=current_date.weekday())
-    end_of_week = start_of_week + timedelta(days=4)
-    return start_of_week <= due_date <= end_of_week
-
-
-
-def construct_url(base_url, entity, resource, **kwargs):
+def process_single_problem_card(
+    _config,
+    _settings,
+    board_id,
+    list_ids,
+    label_ids,
+    topic_label_id,
+    category,
+    problem,
+    due_date,
+    current_date,
+):
     """
-    Construct the URL by joining base_url, entity, board_id (if provided), list_id (if provided), and resource.
-    Ensure that there are no double slashes.
+    Create a Trello card for a single LeetCode problem.
     """
-    # Prepare a list to hold all components of the URL.
-    url_components = [base_url.rstrip('/')]  # Ensure base_url doesn't end with a slash
-
-    # Add the entity (boards, lists, cards, etc.)
-    url_components.append(entity)
-    
-    # If card_id is provided, add it
-    if 'card_id' in kwargs and kwargs['card_id']:
-        url_components.append(kwargs['card_id'])
-    else:
-        # If board_id is provided, add it
-        if 'board_id' in kwargs and kwargs['board_id']:
-            url_components.append(kwargs['board_id'])
-
-        # If list_id is provided, add it
-        if 'list_id' in kwargs and kwargs['list_id']:
-            url_components.append(kwargs['list_id'])
-    
-    # Add the resource without any leading slash
-    url_components.append(resource.lstrip('/'))
-    
-    # Debug logs to identify the issue
-    logging.debug("URL Components before cleaning: %s", url_components)
-    
-    # Filter out None or empty components and join them with '/'
-    cleaned_url = '/'.join(filter(None, url_components))
-    
-    logging.debug("Constructed URL: %s", cleaned_url)
-    return cleaned_url
-
-
-
-
-def download_image(url, filepath="tmp_image.png"):
-    """Download an image from a given URL and save it to a specified path."""
-    try:
-        response = requests.get(url, timeout=10)  # Added timeout of 10 seconds
-        if response.status_code == 200:
-            with open(filepath, "wb") as file:
-                file.write(response.content)
-            return filepath
-        else:
+    card_name = f"{category}: {problem['title']}"
+    if not card_exists(_config, _settings, board_id, card_name):
+        difficulty_label_id = label_ids.get(problem["difficulty"])
+        if not difficulty_label_id:
             logging.error(
-                "Failed to download image. HTTP status code: %s", response.status_code
+                "Difficulty label not found for problem: %s", problem["title"]
             )
-            return None
-    except requests.Timeout:
-        logging.error("Request to %s timed out.", url)
-        return None
+            return
+        link = generate_leetcode_link(problem["title"])
+        list_name, due_date_for_card = get_list_name_and_due_date(
+            due_date, current_date
+        )
+        card_response = trello_request(
+            _config,
+            _settings,
+            resource="/cards",
+            method="POST",
+            entity="",
+            idList=list_ids.get(list_name),
+            name=card_name,
+            desc=link,
+            idLabels=[difficulty_label_id, topic_label_id],
+            due=due_date_for_card.isoformat(),
+        )
+        if not card_response:
+            logging.error("Failed to create card: %s", card_name)
+            return
+        attach_image_to_card(_config, _settings, card_response["id"], category)
 
 
-def get_next_working_day(date):
-    """Get the next working day after a given date, skipping weekends."""
-    next_day = date + timedelta(days=1)
-    while next_day.weekday() >= 5:  # Skip weekends
-        next_day += timedelta(days=1)
-    return next_day
+def process_all_problem_cards(_config, _settings, board_id, topics, current_date):
+    """Process all problem cards for a given board."""
+    list_ids = fetch_all_list_ids(_config, _settings, board_id)
+    label_ids = fetch_all_label_ids(_config, _settings, board_id)
+    all_due_dates = generate_all_due_dates(
+        topics, current_date, _settings["PROBLEMS_PER_DAY"]
+    )
+    due_date_index = 0
+
+    for category, problems in topics.items():
+        topic_label_response = create_topic_label(
+            _config, _settings, board_id, category
+        )
+        if topic_label_response is None:
+            logging.error("Failed to create label for category: %s", category)
+            continue
+        topic_label_id = topic_label_response["id"]
+        for problem in problems:
+            process_single_problem_card(
+                _config,
+                _settings,
+                board_id,
+                list_ids,
+                label_ids,
+                topic_label_id,
+                category,
+                problem,
+                all_due_dates[due_date_index],
+                current_date,
+            )
+            due_date_index += 1
 
 
 def generate_all_due_dates(topics, current_date, problems_per_day):
@@ -119,14 +127,18 @@ def generate_all_due_dates(topics, current_date, problems_per_day):
     due_dates = []
     total_problems = sum(len(problems) for problems in topics.values())
     day = current_date
-    
-    while len(due_dates) < total_problems: # While loop to ensure all problems get a due date
+
+    while (
+        len(due_dates) < total_problems
+    ):  # While loop to ensure all problems get a due date
         if day.weekday() < 5:  # 0-4 denotes Monday to Friday
-            for _ in range(min(problems_per_day, total_problems - len(due_dates))): # Ensure we don't overshoot the total problems
+            for _ in range(
+                min(problems_per_day, total_problems - len(due_dates))
+            ):  # Ensure we don't overshoot the total problems
                 due_dates.append(day)
             day += timedelta(days=1)
         else:
-            day += timedelta(days=1) # Increment the day even if it's a weekend
+            day += timedelta(days=1)  # Increment the day even if it's a weekend
 
     return due_dates
 
@@ -138,6 +150,46 @@ def get_list_name_and_due_date(due_date, current_date):
     )
     return list_name, due_date
 
-def get_max_cards_for_week(settings):
+
+def is_due_this_week(due_date, current_date):
+    """Determine if a given due date falls within the current week."""
+    start_of_week = current_date - timedelta(days=current_date.weekday())
+    end_of_week = start_of_week + timedelta(days=4)
+    return start_of_week <= due_date <= end_of_week
+
+
+def get_next_working_day(date):
+    """Get the next working day after a given date, skipping weekends."""
+    next_day = date + timedelta(days=1)
+    while next_day.weekday() >= 5:  # Skip weekends
+        next_day += timedelta(days=1)
+    return next_day
+
+
+def get_max_cards_for_week(_settings):
     """Calculate maximum cards for the week."""
-    return settings["PROBLEMS_PER_DAY"] * settings["WORKDAYS"]
+    return _settings["PROBLEMS_PER_DAY"] * _settings["WORKDAYS"]
+
+
+def determine_new_due_date_and_list(label_names, current_date):
+    """Determine the new due date and list based on labels."""
+    if "Do not know" in label_names:
+        new_due_date = get_next_working_day(current_date)
+        return new_due_date, "Do this week"
+    elif "Somewhat know" in label_names:
+        new_due_date = get_next_working_day(current_date + timedelta(weeks=1))
+        list_name = (
+            "Do this week"
+            if is_due_this_week(new_due_date, current_date)
+            else "Backlog"
+        )
+        return new_due_date, list_name
+    elif "Know" in label_names:
+        new_due_date = get_next_working_day(current_date + timedelta(weeks=4))
+        return new_due_date, "Completed"
+    return None, None
+
+
+def parse_card_due_date(card_due):
+    """Parse the 'due' date of a card into a datetime object."""
+    return datetime.fromisoformat(card_due.replace("Z", ""))

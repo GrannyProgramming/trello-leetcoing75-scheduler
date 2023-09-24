@@ -22,23 +22,24 @@ import json
 import os
 from datetime import datetime
 from modules.config_loader import load_ini_settings, load_config
-from modules.trello_api import get_board_id
 from modules.board_operations import (
+    get_board_id,
     set_board_background_image,
     manage_board_lists,
     create_missing_labels,
-    manage_this_week_list
 )
-from modules.card_operations import process_all_problem_cards, retest_cards
+from .modules.utilities import process_all_problem_cards
+from .modules.card_operations import manage_this_week_list, retest_cards
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
+
 def setup_trello_board(config, settings):
     """
     Set up the Trello board for operations.
-    
+
     Ensures the board exists, sets its background image, manages its lists, and creates any missing labels.
     """
     board_id = get_board_id(config, settings, settings["BOARD_NAME"])
@@ -54,7 +55,7 @@ def setup_trello_board(config, settings):
 def process_cards(config, settings, board_id, topics, current_date):
     """
     Process Trello cards for a given board and date.
-    
+
     Processes all problem cards, populates the "To Do this Week" list, and manages card retests.
     """
     process_all_problem_cards(config, settings, board_id, topics, current_date)
@@ -62,11 +63,10 @@ def process_cards(config, settings, board_id, topics, current_date):
     retest_cards(config, settings, settings["BOARD_NAME"], current_date)
 
 
-
 def main():
     """
     The main function that coordinates the primary operations.
-    
+
     Loads configurations, sets up the Trello board, and processes the cards.
     """
     config = load_config()
@@ -87,6 +87,7 @@ def main():
     process_cards(config, settings, board_id, topics, current_date)
 
     logging.info("Main script execution completed!")
+
 
 if __name__ == "__main__":
     main()
