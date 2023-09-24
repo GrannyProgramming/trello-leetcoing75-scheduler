@@ -61,6 +61,7 @@ def construct_url(base_url, entity, resource, **kwargs):
     if entity == "cards":
         url_components.extend([
             entity,
+            kwargs.get('card_id'),
             resource
         ])
     else:
