@@ -58,8 +58,9 @@ def construct_url(base_url, entity, resource, **kwargs):
     # Prepare a list to hold all components of the URL.
     url_components = [base_url.rstrip('/')]  # Ensure base_url doesn't end with a slash
     
-    # Add the entity
-    url_components.append(entity)
+    # Add the entity ONLY if it's not a card update
+    if entity != "cards":
+        url_components.append(entity)
     
     # If board_id is provided, add it
     if 'board_id' in kwargs and kwargs['board_id']:
@@ -84,6 +85,7 @@ def construct_url(base_url, entity, resource, **kwargs):
     
     logging.debug("Constructed URL: %s", cleaned_url)
     return cleaned_url
+
 
 
 def download_image(url, filepath="tmp_image.png"):
