@@ -50,38 +50,29 @@ def is_due_this_week(due_date, current_date):
 
 
 
-def construct_url(base_url, entity, resource, board_id=None, list_id=None):
+def construct_url(base_url, entity, resource, **kwargs):
     """
     Construct the URL by joining base_url, entity, board_id (if provided), list_id (if provided), and resource.
     Ensure that there are no double slashes.
     """
-    # Start with base URL
-    segments = [base_url.rstrip('/')]
-
-    # Logging the received values
-    logging.info("Entity: %s, Board ID: %s, List ID: %s, Resource: %s", entity, board_id, list_id, resource)
-
-
-    # If board_id is specified, then entity should be "boards"
-    if entity == "boards" and board_id:
-        segments.extend([entity, board_id])
-    # If list_id is specified, then entity should be "lists"
-    elif entity == "lists" and list_id:
-        segments.extend([entity, list_id])
-    # For all other cases, simply append the entity
+    # Ensure that the base_url doesn't have a trailing slash
+    if base_url.endswith('/'):
+        base_url = base_url[:-1]
+    
+    # Handle lists and cards
+    if entity == 'lists' and resource == 'cards':
+        list_id = kwargs.get('list_id')
+        if list_id:
+            return f"{base_url}/lists/{list_id}/cards"
+    
+    # Handle boards and lists
+    elif entity == 'boards' and resource == 'lists':
+        board_id = kwargs.get('board_id')
+        if board_id:
+            return f"{base_url}/boards/{board_id}/lists"
+    
     else:
-        segments.append(entity)
-
-    # Finally, append the resource
-    segments.append(resource.lstrip('/'))
-
-    constructed_url = '/'.join(segments)
-    
-    # Logging the final constructed URL
-    logging.info("Constructed URL: %s", constructed_url)
-    
-    return constructed_url
-
+        return base_url
 
 def download_image(url, filepath="tmp_image.png"):
     """Download an image from a given URL and save it to a specified path."""
