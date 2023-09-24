@@ -55,24 +55,24 @@ def construct_url(base_url, entity, resource, **kwargs):
     Construct the URL by joining base_url, entity, board_id (if provided), list_id (if provided), and resource.
     Ensure that there are no double slashes.
     """
-    # Ensure that the base_url doesn't have a trailing slash
-    if base_url.endswith('/'):
-        base_url = base_url[:-1]
+    # Create a pattern where we have placeholders for every part of the URL
+    url_pattern = "{base_url}/{entity}/{board_id}/{list_id}/{card_id}/{resource}"
     
-    # Handle lists and cards
-    if entity == 'lists' and resource == 'cards':
-        list_id = kwargs.get('list_id')
-        if list_id:
-            return f"{base_url}/lists/{list_id}/cards"
+    # Fill in the placeholders with actual values or leave them blank
+    constructed_url = url_pattern.format(
+        base_url=base_url.rstrip('/'),
+        entity=entity or "",
+        board_id=kwargs.get('board_id', ""),
+        list_id=kwargs.get('list_id', ""),
+        card_id=kwargs.get('card_id', ""),
+        resource=resource or ""
+    )
     
-    # Handle boards and lists
-    elif entity == 'boards' and resource == 'lists':
-        board_id = kwargs.get('board_id')
-        if board_id:
-            return f"{base_url}/boards/{board_id}/lists"
+    # Clean up the URL by removing any 'empty' path elements
+    cleaned_url = '/'.join(filter(None, constructed_url.split('/')))
     
-    else:
-        return base_url
+    return cleaned_url
+
 
 def download_image(url, filepath="tmp_image.png"):
     """Download an image from a given URL and save it to a specified path."""
