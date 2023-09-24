@@ -103,20 +103,25 @@ def create_board(config, settings, board_name):
         logging.error("Failed to create board with name: %s", board_name)
         return None
 
-
-
 def get_board_id(config, settings, board_name):
-    """Get the board ID given a board name. If the board does not exist, create it."""
+    """Get the board ID given a board name. If the board does not exist or is closed, create it."""
     boards = trello_request(config, settings, resource="me/boards", entity="members")
-    # Check if board with the given name exists
-    board_id = next((board["id"] for board in boards if board["name"] == board_name), None)
-    # If board doesn't exist, create it
+    
+    # Check if an open board with the given name exists
+    board_id = next((board["id"] for board in boards if board["name"] == board_name and not board["closed"]), None)
+    
+    # If board doesn't exist or is closed, create it
     if not board_id:
         board_id = create_board(config, settings, board_name)
-    if board_id:
         logging.info("Created a new board with ID: %s", board_id)
     else:
-        logging.error("Board creation failed.")
+        logging.info("Using existing board with ID: %s", board_id)
+
+    if not board_id:
+        logging.error("Failed to find or create a board with name: %s", board_name)
+
+    return board_id
+
     
     return board_id
 
