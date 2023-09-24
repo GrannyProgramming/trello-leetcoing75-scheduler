@@ -65,15 +65,16 @@ def trello_request(
     resource,
     method="GET",
     entity="boards",  # Default to boards if not specified
-    board_id=None,
-    list_id=None,
     timeout=None,
     files=None,
     **kwargs,
 ):
     """Send a request to Trello API and return the response."""
+    # Filter out None values from kwargs
+    kwargs = {k: v for k, v in kwargs.items() if v is not None}
+    
     # Construct the URL based on the provided parameters
-    url = construct_url(settings['BASE_URL'], entity, resource, board_id=board_id, list_id=list_id)
+    url = construct_url(settings['BASE_URL'], entity, resource, **kwargs)
 
     query = {"key": config["API_KEY"], "token": config["OAUTH_TOKEN"]}
     query.update(kwargs)  # Always add the kwargs to the query parameters
@@ -82,6 +83,7 @@ def trello_request(
     return make_request(
         url, method, params=query, timeout=timeout, files=files
     )
+
 
 
 

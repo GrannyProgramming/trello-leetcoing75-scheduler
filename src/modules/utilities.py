@@ -62,9 +62,9 @@ def construct_url(base_url, entity, resource, **kwargs):
     constructed_url = url_pattern.format(
         base_url=base_url.rstrip('/'),
         entity=entity or "",
-        board_id=kwargs.get('board_id', ""),
-        list_id=kwargs.get('list_id', ""),
-        card_id=kwargs.get('card_id', ""),
+        board_id=kwargs.get('board_id', "") or "",
+        list_id=kwargs.get('list_id', "") or "",
+        card_id=kwargs.get('card_id', "") or "",
         resource=resource or ""
     )
     
