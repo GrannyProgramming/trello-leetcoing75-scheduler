@@ -60,7 +60,7 @@ def construct_url(base_url, entity, resource, **kwargs):
     
     # Fill in the placeholders with actual values or leave them blank
     constructed_url = url_pattern.format(
-        base_url=base_url.rstrip('/'),
+        base_url=base_url,
         entity=entity or "",
         board_id=kwargs.get('board_id', "") or "",
         list_id=kwargs.get('list_id', "") or "",
@@ -68,10 +68,12 @@ def construct_url(base_url, entity, resource, **kwargs):
         resource=resource or ""
     )
     
-    # Clean up the URL by removing any 'empty' path elements
-    cleaned_url = '/'.join(filter(None, constructed_url.split('/')))
+    # Clean up the URL by removing any 'empty' path elements and ensure that the components are strings
+    cleaned_url = '/'.join(filter(None, [str(comp) if comp is not None else "" for comp in constructed_url.split('/')]))
     
     return cleaned_url
+
+
 
 
 def download_image(url, filepath="tmp_image.png"):
