@@ -57,22 +57,21 @@ def construct_url(base_url, entity, resource, **kwargs):
     """
     # Prepare a list to hold all components of the URL.
     url_components = [base_url.rstrip('/')]  # Ensure base_url doesn't end with a slash
-    
-    # Add the entity ONLY if it's not a card update
-    if entity != "cards":
-        url_components.append(entity)
-    
-    # If board_id is provided, add it
-    if 'board_id' in kwargs and kwargs['board_id']:
-        url_components.append(kwargs['board_id'])
-    
-    # If list_id is provided, add it
-    if 'list_id' in kwargs and kwargs['list_id']:
-        url_components.append(kwargs['list_id'])
+
+    # Add the entity (boards, lists, cards, etc.)
+    url_components.append(entity)
     
     # If card_id is provided, add it
     if 'card_id' in kwargs and kwargs['card_id']:
         url_components.append(kwargs['card_id'])
+    else:
+        # If board_id is provided, add it
+        if 'board_id' in kwargs and kwargs['board_id']:
+            url_components.append(kwargs['board_id'])
+
+        # If list_id is provided, add it
+        if 'list_id' in kwargs and kwargs['list_id']:
+            url_components.append(kwargs['list_id'])
     
     # Add the resource without any leading slash
     url_components.append(resource.lstrip('/'))
@@ -85,6 +84,7 @@ def construct_url(base_url, entity, resource, **kwargs):
     
     logging.debug("Constructed URL: %s", cleaned_url)
     return cleaned_url
+
 
 
 
