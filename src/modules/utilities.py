@@ -55,6 +55,11 @@ def construct_url(base_url, entity, resource, **kwargs):
     Construct the URL by joining base_url, entity, board_id (if provided), list_id (if provided), and resource.
     Ensure that there are no double slashes.
     """
+    
+    # If resource is already a full URL, return it as is
+    if resource.startswith("http"):
+        return resource
+
     # Prepare a list to hold all components of the URL.
     url_components = [base_url.rstrip('/')]  # Ensure base_url doesn't end with a slash
 
@@ -71,6 +76,7 @@ def construct_url(base_url, entity, resource, **kwargs):
     cleaned_url = '/'.join(filter(None, url_components))
     
     return cleaned_url
+
 
 
 
