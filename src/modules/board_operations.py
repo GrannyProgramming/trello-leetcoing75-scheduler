@@ -136,10 +136,12 @@ def manage_this_week_list(local_config, local_settings, board_id):
     cards = fetch_cards_from_list(local_config, local_settings, to_do_this_week_id)
     filtered_cards = filter_cards_by_label(cards, local_settings)
 
+    logging.info("Max cards for the week: %s", max_cards)
+    logging.info("Number of filtered cards in 'To Do this Week' list: %s", len(filtered_cards))
+
     # Calculate the number of cards to pull
     cards_to_pull_count = max_cards - len(filtered_cards)
 
     logging.info("Need to pull %s cards to meet the weekly quota.", cards_to_pull_count)
     
     apply_changes_to_board(local_config, local_settings, list_ids, cards_to_pull_count)
-
