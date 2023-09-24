@@ -29,7 +29,6 @@ Author: Alex McGonigle @grannyprogramming
 
 import logging
 from datetime import timedelta
-from functools import reduce
 import requests
 
 
@@ -41,15 +40,6 @@ logging.basicConfig(
 def generate_leetcode_link(title):
     """Generate a direct LeetCode problem link based on its title."""
     return f"https://leetcode.com/problems/{title.lower().replace(' ', '-')}/"
-
-
-def compute_due_date(start_date, days):
-    """Compute the due date based on a start date and a number of working days."""
-    return reduce(
-        lambda x, _: get_next_working_day(x) if x.weekday() < 5 else x,
-        range(days),
-        start_date,
-    )
 
 
 def is_due_this_week(due_date, current_date):
