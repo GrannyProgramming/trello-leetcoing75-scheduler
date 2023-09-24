@@ -88,7 +88,7 @@ def trello_request(
 def create_board(config, settings, board_name):
     """Create a new Trello board and return its ID."""
     new_board = trello_request(
-        config, settings, resource="boards", method="POST", name=board_name
+        config, settings, resource="", method="POST", name=board_name
     )
 
     # Log the response for debugging
