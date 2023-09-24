@@ -57,27 +57,31 @@ def construct_url(base_url, entity, resource, **kwargs):
     """
     # Prepare a list to hold all components of the URL.
     url_components = [base_url.rstrip('/')]  # Ensure base_url doesn't end with a slash
-
-    if entity == "cards":
-        url_components.extend([
-            entity,
-            kwargs.get('card_id'),
-            resource
-        ])
-    else:
-        url_components.extend([
-            kwargs.get('entity', entity),
-            kwargs.get('board_id'),
-            kwargs.get('list_id'),
-            kwargs.get('card_id'),
-            resource
-        ])
-
+    
+    # Add the entity
+    url_components.append(entity)
+    
+    # If board_id is provided, add it
+    if 'board_id' in kwargs and kwargs['board_id']:
+        url_components.append(kwargs['board_id'])
+    
+    # If list_id is provided, add it
+    if 'list_id' in kwargs and kwargs['list_id']:
+        url_components.append(kwargs['list_id'])
+    
+    # If card_id is provided, add it
+    if 'card_id' in kwargs and kwargs['card_id']:
+        url_components.append(kwargs['card_id'])
+    
+    # Add the resource
+    url_components.append(resource)
+    
     # Filter out None or empty components and join them with '/'
     cleaned_url = '/'.join(filter(None, url_components))
     
     logging.debug("Constructed URL: %s", cleaned_url)
     return cleaned_url
+
 
 
 
