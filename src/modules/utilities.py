@@ -69,12 +69,16 @@ def construct_url(base_url, entity, resource, board_id=None, list_id=None):
     segments = [base_url.rstrip('/')]
 
     # Logging the received values
-    logging.info(f"Entity: {entity}, Board ID: {board_id}, List ID: {list_id}, Resource: {resource}")
+    logging.info("Entity: %s, Board ID: %s, List ID: %s, Resource: %s", entity, board_id, list_id, resource)
 
+
+    # If board_id is specified, then entity should be "boards"
     if entity == "boards" and board_id:
         segments.extend([entity, board_id])
+    # If list_id is specified, then entity should be "lists"
     elif entity == "lists" and list_id:
         segments.extend([entity, list_id])
+    # For all other cases, simply append the entity
     else:
         segments.append(entity)
 
@@ -84,13 +88,9 @@ def construct_url(base_url, entity, resource, board_id=None, list_id=None):
     constructed_url = '/'.join(segments)
     
     # Logging the final constructed URL
-    logging.info(f"Constructed URL: {constructed_url}")
+    logging.info("Constructed URL: %s", constructed_url)
     
     return constructed_url
-
-
-
-
 
 
 def download_image(url, filepath="tmp_image.png"):
@@ -120,6 +120,7 @@ def get_next_working_day(date):
 
 
 def generate_all_due_dates(topics, current_date, problems_per_day):
+    """Generate due dates for every problem, considering weekdays."""
     due_dates = []
     total_problems = sum(len(problems) for problems in topics.values())
     day = current_date
@@ -141,3 +142,11 @@ def get_list_name_and_due_date(due_date, current_date):
         "Do this week" if is_due_this_week(due_date, current_date) else "Backlog"
     )
     return list_name, due_date
+
+def get_max_cards_for_week(settings):
+    """Calculate maximum cards for the week."""
+    return settings["PROBLEMS_PER_DAY"] * settings["WORKDAYS"]
+
+def cards_to_pull(cards, max_cards):
+    """Determine which cards need to be pulled from backlog to meet the weekly quota."""
+    return cards[:max_cards - len(cards)]

@@ -31,6 +31,9 @@ import configparser
 
 
 def load_ini_settings():
+    """
+    Load application-specific settings from an INI file.
+    """
     config = configparser.ConfigParser()
     config.read("config/settings.ini")
 
@@ -50,6 +53,9 @@ def load_ini_settings():
 
 
 def load_config():
+    """
+    Load essential configurations from environment variables.
+    """
     return {
         "API_KEY": os.environ.get("API_KEY"),
         "OAUTH_TOKEN": os.environ.get("OAUTH_TOKEN"),

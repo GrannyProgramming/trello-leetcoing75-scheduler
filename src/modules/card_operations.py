@@ -115,7 +115,9 @@ def process_single_problem_card(
     due_date,
     current_date,
 ):
-    """Process a single problem card."""
+    """
+    Create a Trello card for a single LeetCode problem.
+    """
     card_name = f"{category}: {problem['title']}"
     if not card_exists(config, settings, board_id, card_name):
         difficulty_label_id = label_ids.get(problem["difficulty"])
@@ -205,6 +207,53 @@ def determine_new_due_date_and_list(label_names, current_date):
 def parse_card_due_date(card_due):
     """Parse the 'due' date of a card into a datetime object."""
     return datetime.fromisoformat(card_due.replace("Z", ""))
+
+def fetch_cards_from_list(config, settings, list_id):
+    """Fetch all cards from a given list."""
+    return trello_request(config, settings, "cards", entity="lists", list_id=list_id)
+
+def filter_cards_by_label(cards):
+    """Filter out cards with specific labels."""
+    return [
+        card for card in cards if not set(["Somewhat know", "Do not know", "Know"]) & set(card["labels"])
+    ]
+
+def apply_changes_to_board(config, settings, list_ids, cards_to_add):
+    """Apply the necessary changes to the Trello board (like pulling cards from backlog)."""
+    to_do_this_week_id = list_ids.get("To Do this Week")
+    
+    for _ in range(cards_to_add):
+        top_card = get_top_card_from_backlog(config, settings, list_ids)
+        if top_card:
+            move_card_to_list(config, settings, top_card['id'], to_do_this_week_id)
+        else:
+            logging.warning("No more cards to pull from the 'Backlog'.")
+            break
+
+def get_top_card_from_backlog(config, settings, list_ids):
+    """
+    Get the top card from the 'Backlog' list.
+    """
+    backlog_id = list_ids.get("Backlog")
+    backlog_cards = fetch_cards_from_list(config, settings, backlog_id)
+    if not backlog_cards:
+        logging.warning("No cards found in the 'Backlog' list.")
+        return None
+    return backlog_cards[0]
+
+def move_card_to_list(config, settings, card_id, target_list_id):
+    """
+    Move a card to a specified list.
+    """
+    trello_request(
+        config,
+        settings,
+        f"/cards/{card_id}",
+        "PUT",
+        idList=target_list_id
+    )
+    logging.info(f"Moved card with ID '{card_id}' to list with ID '{target_list_id}'.")
+
 
 
 def process_retrospective_cards(config, settings, board_id, current_date):

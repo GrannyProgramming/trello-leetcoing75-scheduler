@@ -71,6 +71,7 @@ def trello_request(
     files=None,
     **kwargs,
 ):
+    """Send a request to Trello API and return the response."""
     # Construct the URL based on the provided parameters
     url = construct_url(settings['BASE_URL'], entity, resource, board_id=board_id, list_id=list_id)
 
