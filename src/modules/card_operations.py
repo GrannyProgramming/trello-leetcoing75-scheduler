@@ -48,7 +48,8 @@ from .utilities import (
     get_list_name_and_due_date,
     generate_all_due_dates,
     is_due_this_week,
-    get_next_working_day
+    get_next_working_day,
+    get_max_cards_for_week
 )
 
 logging.basicConfig(
@@ -225,14 +226,30 @@ def filter_cards_by_label(cards):
 def apply_changes_to_board(config, settings, list_ids, cards_to_add):
     """Apply the necessary changes to the Trello board (like pulling cards from backlog)."""
     to_do_this_week_id = list_ids.get("Do this week")
-    
-    for _ in range(cards_to_add):
+    if not to_do_this_week_id:
+        logging.error("To Do this Week ID not found when trying to apply changes.")
+        return
+
+    # Fetch the current cards in the "Do this week" list.
+    current_cards = fetch_cards_from_list(config, settings, to_do_this_week_id)
+    if not current_cards:
+        current_cards = []
+
+    # Filter out the cards that have the labels "Somewhat know:blue", "Do not know:red", and "Know:green".
+    filtered_cards = filter_cards_by_label(current_cards)
+
+    # Calculate how many more cards are needed in the "Do this week" list to meet the weekly quota.
+    cards_needed = get_max_cards_for_week(settings) - len(filtered_cards)
+    cards_to_pull = min(cards_needed, cards_to_add)
+
+    for _ in range(cards_to_pull):
         top_card = get_top_card_from_backlog(config, settings, list_ids)
         if top_card:
             move_card_to_list(config, settings, top_card['id'], to_do_this_week_id)
         else:
             logging.warning("No more cards to pull from the 'Backlog'.")
             break
+
 
 def get_top_card_from_backlog(config, settings, list_ids):
     """
