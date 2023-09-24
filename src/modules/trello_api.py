@@ -186,3 +186,10 @@ def set_custom_board_background(config, settings, board_id, background_id):
         value=background_id,
     )
     return response if response else None
+
+
+def fetch_cards_from_list(config, settings, list_id):
+    """Fetch all cards from a given list."""
+    # Construct the URL using the provided function
+    url = construct_url(config['BASE_URL'], "lists", "cards", list_id=list_id)
+    return trello_request(config, settings, url)

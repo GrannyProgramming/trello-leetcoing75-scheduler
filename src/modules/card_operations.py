@@ -42,7 +42,7 @@ Author: Alex McGonigle @grannyprogramming
 
 import logging
 from datetime import datetime, timedelta
-from .trello_api import trello_request, card_exists, get_board_id
+from .trello_api import trello_request, card_exists, get_board_id, fetch_cards_from_list
 from .utilities import (
     generate_leetcode_link,
     get_list_name_and_due_date,
@@ -208,15 +208,16 @@ def parse_card_due_date(card_due):
     """Parse the 'due' date of a card into a datetime object."""
     return datetime.fromisoformat(card_due.replace("Z", ""))
 
-def fetch_cards_from_list(config, settings, list_id):
-    """Fetch all cards from a given list."""
-    return trello_request(config, settings, "cards", entity="lists", list_id=list_id)
 
 def filter_cards_by_label(cards):
     """Filter out cards with specific labels."""
+    if not cards:
+        return []
+
     return [
         card for card in cards if not set(["Somewhat know", "Do not know", "Know"]) & set(card["labels"])
     ]
+
 
 def apply_changes_to_board(config, settings, list_ids, cards_to_add):
     """Apply the necessary changes to the Trello board (like pulling cards from backlog)."""
