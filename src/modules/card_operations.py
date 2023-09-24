@@ -24,7 +24,9 @@ Functions:
       required number of cards.
     - get_max_cards_for_week(_settings): Calculates the maximum number of cards required for the week.
     - fetch_cards_from_list(_config, _settings, list_id): Fetches all cards from a given list.
-
+    - process_single_problem_card(_config, _settings, board_id, list_ids, label_ids, topic_label_id, category, problem, due_date, current_date): Creates a Trello card for a single LeetCode problem.
+    - process_all_problem_cards(_config, _settings, board_id, topics, current_date): Processes all problem cards for a given board.
+    
 Dependencies:
     - logging: Used for logging information and error messages.
     - .trello_api: Houses Trello-specific API functions.
@@ -37,11 +39,14 @@ Author: Alex McGonigle @grannyprogramming
 
 import logging
 from .trello_api import trello_request
-from .board_operations import fetch_all_list_ids, get_board_id
+from .board_operations import fetch_all_list_ids, get_board_id, fetch_all_label_ids
 from .utilities import (
     determine_new_due_date_and_list,
     parse_card_due_date,
     is_due_this_week,
+    generate_leetcode_link,
+    generate_all_due_dates,
+    get_list_name_and_due_date
 )
 
 logging.basicConfig(
@@ -269,3 +274,80 @@ def fetch_cards_from_list(_config, _settings, list_id):
         logging.error("list_id is not provided when trying to fetch cards from a list.")
         return None
     return trello_request(_config, _settings, "cards", entity="lists", list_id=list_id)
+
+def process_single_problem_card(
+    _config,
+    _settings,
+    board_id,
+    list_ids,
+    label_ids,
+    topic_label_id,
+    category,
+    problem,
+    due_date,
+    current_date,
+):
+    """
+    Create a Trello card for a single LeetCode problem.
+    """
+    card_name = f"{category}: {problem['title']}"
+    if not card_exists(_config, _settings, board_id, card_name):
+        difficulty_label_id = label_ids.get(problem["difficulty"])
+        if not difficulty_label_id:
+            logging.error(
+                "Difficulty label not found for problem: %s", problem["title"]
+            )
+            return
+        link = generate_leetcode_link(problem["title"])
+        list_name, due_date_for_card = get_list_name_and_due_date(
+            due_date, current_date
+        )
+        card_response = trello_request(
+            _config,
+            _settings,
+            resource="/cards",
+            method="POST",
+            entity="",
+            idList=list_ids.get(list_name),
+            name=card_name,
+            desc=link,
+            idLabels=[difficulty_label_id, topic_label_id],
+            due=due_date_for_card.isoformat(),
+        )
+        if not card_response:
+            logging.error("Failed to create card: %s", card_name)
+            return
+        attach_image_to_card(_config, _settings, card_response["id"], category)
+
+
+def process_all_problem_cards(_config, _settings, board_id, topics, current_date):
+    """Process all problem cards for a given board."""
+    list_ids = fetch_all_list_ids(_config, _settings, board_id)
+    label_ids = fetch_all_label_ids(_config, _settings, board_id)
+    all_due_dates = generate_all_due_dates(
+        topics, current_date, _settings["PROBLEMS_PER_DAY"]
+    )
+    due_date_index = 0
+
+    for category, problems in topics.items():
+        topic_label_response = create_topic_label(
+            _config, _settings, board_id, category
+        )
+        if topic_label_response is None:
+            logging.error("Failed to create label for category: %s", category)
+            continue
+        topic_label_id = topic_label_response["id"]
+        for problem in problems:
+            process_single_problem_card(
+                _config,
+                _settings,
+                board_id,
+                list_ids,
+                label_ids,
+                topic_label_id,
+                category,
+                problem,
+                all_due_dates[due_date_index],
+                current_date,
+            )
+            due_date_index += 1
