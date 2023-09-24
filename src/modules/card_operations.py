@@ -48,7 +48,7 @@ from .utilities import (
     get_list_name_and_due_date,
     generate_all_due_dates,
     is_due_this_week,
-    get_next_working_day,
+    get_next_working_day
 )
 
 logging.basicConfig(
@@ -252,8 +252,7 @@ def move_card_to_list(config, settings, card_id, target_list_id):
         "PUT",
         idList=target_list_id
     )
-    logging.info(f"Moved card with ID '{card_id}' to list with ID '{target_list_id}'.")
-
+    logging.info("Moved card with ID %s to list with ID %s.", card_id, target_list_id)
 
 
 def process_retrospective_cards(config, settings, board_id, current_date):

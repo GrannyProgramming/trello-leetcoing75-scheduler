@@ -146,7 +146,3 @@ def get_list_name_and_due_date(due_date, current_date):
 def get_max_cards_for_week(settings):
     """Calculate maximum cards for the week."""
     return settings["PROBLEMS_PER_DAY"] * settings["WORKDAYS"]
-
-def cards_to_pull(cards, max_cards):
-    """Determine which cards need to be pulled from backlog to meet the weekly quota."""
-    return cards[:max_cards - len(cards)]

@@ -27,7 +27,7 @@ from modules.board_operations import (
     set_board_background_image,
     manage_board_lists,
     create_missing_labels,
-    populate_this_week_list,
+    manage_this_week_list
 )
 from modules.card_operations import process_all_problem_cards, retest_cards
 
@@ -50,6 +50,7 @@ def setup_trello_board(config, settings):
     create_missing_labels(board_id)
     return board_id
 
+
 def process_cards(config, settings, board_id, topics, current_date):
     """
     Process Trello cards for a given board and date.
@@ -57,8 +58,10 @@ def process_cards(config, settings, board_id, topics, current_date):
     Processes all problem cards, populates the "To Do this Week" list, and manages card retests.
     """
     process_all_problem_cards(config, settings, board_id, topics, current_date)
-    populate_this_week_list(board_id)
+    manage_this_week_list(config, settings, board_id)
     retest_cards(config, settings, settings["BOARD_NAME"], current_date)
+
+
 
 def main():
     """

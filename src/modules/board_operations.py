@@ -30,8 +30,14 @@ Author: Alex McGonigle @grannyprogramming
 
 
 import logging
-from .utilities import download_image
-from .card_operations import fetch_all_list_ids, parse_card_due_date
+from .utilities import download_image, get_max_cards_for_week
+from .card_operations import (
+    fetch_all_list_ids,
+    parse_card_due_date,
+    fetch_cards_from_list,
+    filter_cards_by_label,
+    apply_changes_to_board
+)
 from .trello_api import (
     trello_request,
     get_member_id,
@@ -154,3 +160,27 @@ def populate_this_week_list(board_id):
             config, settings, f"/cards/{card_id}", "PUT", idList=this_week_list_id
         )
         logging.info("Moved card %s to 'Do this week' list.", card_id)
+
+
+def manage_this_week_list(local_config, local_settings, board_id):
+    """
+    Ensure the 'To Do this Week' list has the required number of cards based on the settings.
+    Cards with specific labels are excluded from this count.
+    """
+    max_cards = get_max_cards_for_week(local_settings)
+    
+    # Fetch list IDs and get the ID for "To Do this Week"
+    list_ids = fetch_all_list_ids(local_config, local_settings, board_id)
+    to_do_this_week_id = list_ids.get("To Do this Week")
+    
+    # Fetch and filter cards
+    cards = fetch_cards_from_list(local_config, local_settings, to_do_this_week_id)
+    filtered_cards = filter_cards_by_label(cards)
+
+    # Calculate the number of cards to pull
+    cards_to_pull_count = max_cards - len(filtered_cards)
+
+    logging.info("Need to pull %s cards to meet the weekly quota.", cards_to_pull_count)
+    
+    apply_changes_to_board(local_config, local_settings, list_ids, cards_to_pull_count)
+
