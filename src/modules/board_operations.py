@@ -87,7 +87,6 @@ def manage_board_lists(board_id):
             create_list(_config, _settings, board_id, required_list)
 
 
-
 def create_missing_labels(board_id):
     """Creates missing labels for a given board."""
     labels = trello_request(_config, _settings, f"{board_id}/labels", entity="boards")
@@ -161,7 +160,6 @@ def create_board(_config, _settings, board_name):
     else:
         logging.error("Failed to create board with name: %s", board_name)
         return None
-
 
 
 def get_board_id(_config, _settings, board_name):
@@ -259,14 +257,11 @@ def get_labels_on_board(_config, _settings, board_id):
     """Fetch all labels on the board."""
     return trello_request(_config, _settings, f"{board_id}/labels")
 
+
 def delete_label(_config, _settings, label_id):
     """Delete a label."""
     return trello_request(
-        _config,
-        _settings,
-        label_id,
-        method="DELETE",
-        entity="labels"
+        _config, _settings, label_id, method="DELETE", entity="labels"
     )
 
 
@@ -275,4 +270,3 @@ def delete_all_labels(_config, _settings, board_id):
     labels = get_labels_on_board(_config, _settings, board_id)
     for label in labels:
         delete_label(_config, _settings, label["id"])
-
