@@ -78,17 +78,12 @@ def set_board_background_image(board_id):
 
 
 def manage_board_lists(board_id):
-    """Manages the default and required lists for a given board."""
-    for default_list in _settings["DEFAULT_LISTS"]:
-        if check_list_exists(_config, _settings, board_id, default_list):
-            delete_list(_config, _settings, board_id, default_list)
-
-    # Delete all labels on the board
-    delete_all_labels(_config, _settings, board_id)
+    """Manages the required lists for a given board."""
 
     for required_list in _settings["REQUIRED_LISTS"]:
         if not check_list_exists(_config, _settings, board_id, required_list):
             create_list(_config, _settings, board_id, required_list)
+
 
 
 def create_missing_labels(board_id):
@@ -141,7 +136,7 @@ def fetch_all_label_ids(_config, _settings, board_id):
 
 
 def create_board(_config, _settings, board_name):
-    """Create a new Trello board and return its ID."""
+    """Create a new Trello board, delete default lists, delete all labels, and return its ID."""
     new_board = trello_request(
         _config, _settings, resource="", method="POST", name=board_name
     )
@@ -151,10 +146,20 @@ def create_board(_config, _settings, board_name):
 
     if new_board and "id" in new_board:
         logging.info("Successfully created board with ID: %s", new_board["id"])
+
+        # Delete default lists for the newly created board
+        for default_list in _settings["DEFAULT_LISTS"]:
+            if check_list_exists(_config, _settings, new_board["id"], default_list):
+                delete_list(_config, _settings, new_board["id"], default_list)
+
+        # Delete all labels for the newly created board
+        delete_all_labels(_config, _settings, new_board["id"])
+
         return new_board["id"]
     else:
         logging.error("Failed to create board with name: %s", board_name)
         return None
+
 
 
 def get_board_id(_config, _settings, board_name):
@@ -268,3 +273,4 @@ def delete_all_labels(_config, _settings, board_id):
     labels = get_labels_on_board(_config, _settings, board_id)
     for label in labels:
         delete_label(_config, _settings, label["id"])
+
