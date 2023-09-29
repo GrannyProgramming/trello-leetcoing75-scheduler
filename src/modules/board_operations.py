@@ -3,7 +3,7 @@ Trello Board Management Module.
 
 This module provides utility functions for managing various aspects of Trello boards.
 It supports operations such as fetching and setting board background images, managing board lists,
-creating missing labels on boards, creating boards based on names, and more.
+creating and deleting labels on boards, creating boards based on names, and more.
 
 Functions:
     - fetch_image(): Downloads the background image from a specified URL.
@@ -12,7 +12,7 @@ Functions:
     - create_missing_labels(board_id): Creates any missing labels on a specified Trello board based on predefined defaults.
     - fetch_all_list_ids(_config, _settings, board_id): Retrieves all list IDs for a given board.
     - fetch_all_label_ids(_config, _settings, board_id): Retrieves all label IDs for a given board.
-    - create_board(_config, _settings, board_name): Creates a new Trello board and returns its ID.
+    - create_board(_config, _settings, board_name): Creates a new Trello board, deletes default lists and labels, and returns its ID.
     - get_board_id(_config, _settings, board_name): Gets the board ID given a board name or creates it if it doesn't exist.
     - delete_list(_config, _settings, board_id, list_name): Deletes a list on a board.
     - check_list_exists(_config, _settings, board_id, list_name): Checks if a list exists on a board.
@@ -20,21 +20,23 @@ Functions:
     - upload_custom_board_background(_config, _settings, member_id, image_filepath): Uploads a custom background image for the board.
     - set_custom_board_background(_config, _settings, board_id, background_id): Sets a custom background for the board.
     - get_member_id(_config, _settings): Retrieves the member ID.
+    - get_labels_on_board(_config, _settings, board_id): Fetches all labels on a board.
+    - delete_label(_config, _settings, label_id): Deletes a specific label.
+    - delete_all_labels(_config, _settings, board_id): Deletes all labels on a board.
 
 Dependencies:
     - os: Provides a way of using operating system-dependent functionality.
     - logging: Used for logging information and error messages.
     - .trello_api: Houses Trello-specific API functions.
-    - ._config_loader: Provides functions to load _configurations and _settings.
+    - ._config_loader: Provides functions to load configurations and settings.
 
 Globals:
-    - _settings: Global variable storing loaded _settings from an INI file.
-    - _config: Global variable storing loaded _configurations.
+    - _settings: Global variable storing loaded settings from an INI file.
+    - _config: Global variable storing loaded configurations.
     - TRELLO_ENTITY: Dictionary containing constants for different Trello entities.
 
 Author: Alex McGonigle @grannyprogramming
 """
-
 
 import os
 import logging

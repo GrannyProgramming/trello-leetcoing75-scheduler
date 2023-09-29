@@ -26,7 +26,8 @@ Functions:
     - fetch_cards_from_list(_config, _settings, list_id): Fetches all cards from a given list.
     - process_single_problem_card(_config, _settings, board_id, list_ids, label_ids, topic_label_id, category, problem, due_date, current_date): Creates a Trello card for a single LeetCode problem.
     - process_all_problem_cards(_config, _settings, board_id, topics, current_date): Processes all problem cards for a given board.
-    
+    - add_comment_to_card(_config, _settings, card_id, comment_content): Adds a comment to a given card.
+
 Dependencies:
     - logging: Used for logging information and error messages.
     - .trello_api: Houses Trello-specific API functions.

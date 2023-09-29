@@ -7,22 +7,19 @@ parsing and managing dates, and more.
 
 Functions:
     - generate_leetcode_link(title): Generates a direct link to a LeetCode problem based on its title.
-    - process_single_problem_card(_config, _settings, board_id, list_ids, label_ids, topic_label_id, category, problem, due_date, current_date): Creates a Trello card for a single LeetCode problem.
-    - process_all_problem_cards(_config, _settings, board_id, topics, current_date): Processes all problem cards for a given board.
     - generate_all_due_dates(topics, current_date, problems_per_day): Generates due dates for every problem, taking into account weekdays.
     - get_list_name_and_due_date(due_date, current_date): Determines the appropriate list name and due date based on the current date.
     - is_due_this_week(due_date, current_date): Checks if a specified due date falls within the current week.
     - get_next_working_day(date): Returns the next working day after a given date, excluding weekends.
-    - get_max_cards_for_week(_settings): Calculates the maximum number of cards for the week.
+    - get_max_cards_for_week(_settings): Calculates the maximum number of cards required for the week.
     - determine_new_due_date_and_list(label_names, current_date): Determines the new due date and list for a card based on its labels.
     - parse_card_due_date(card_due): Parses the 'due' date of a card into a datetime object.
+    - load_comment_from_md_file(md_file_path): Loads the content of a markdown file and returns it as a string.
 
 Dependencies:
     - logging: Used for logging information and error messages.
+    - os: Provides a way of using operating system-dependent functionality.
     - datetime: Used for date operations and manipulations.
-    - .card_operations: Contains utility functions related to card operations.
-    - .trello_api: Houses Trello-specific API functions.
-    - .board_operations: Provides functions for board-related operations.
 
 Author: Alex McGonigle @grannyprogramming
 """
@@ -124,4 +121,3 @@ def load_comment_from_md_file(md_file_path):
 
     with open(absolute_path, "r", encoding="utf-8") as md_file:
         return md_file.read()
-
