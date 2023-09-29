@@ -29,6 +29,7 @@ Author: Alex McGonigle @grannyprogramming
 
 
 import logging
+import os
 from datetime import timedelta, datetime
 
 logging.basicConfig(
@@ -118,5 +119,9 @@ def load_comment_from_md_file(md_file_path):
     """
     Load the content of the markdown file and return as a string.
     """
-    with open(md_file_path, "r", encoding="utf-8") as md_file:
+    github_workspace = os.environ.get("GITHUB_WORKSPACE", "")
+    absolute_path = os.path.join(github_workspace, md_file_path)
+
+    with open(absolute_path, "r", encoding="utf-8") as md_file:
         return md_file.read()
+
