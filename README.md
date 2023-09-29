@@ -20,8 +20,22 @@ One of the core principles that influenced the design of this scheduler is the c
 - **Efficient Learning**: Instead of cramming, spaced repetition promotes steady, incremental learning, which is proven to be more effective.
 - **Adaptive**: The technique adjusts to your learning pace. Topics you're familiar with will appear less often, while challenging ones will be reviewed more frequently.
 
-The Trello LeetCoding75 Scheduler inherently supports spaced repetition. By categorizing challenges and automating due dates, you're encouraged to revisit topics and problems periodically, ensuring a deeper understanding and better performance in coding interviews.
+### How It Works:
 
+1. **Weekly Challenges**: 
+   - Each week, the scheduler ensures that the 'To Do this Week' list contains the required number of cards, as defined in the settings. 
+   - Some cards, based on specific labels, are exempt from this count.
+
+2. **Retrospective Processing**: 
+   - Cards in the 'Retrospective' list are periodically processed. 
+   - Their due dates and positions are adjusted based on their associated labels:
+     - **Do not know**: The challenge is scheduled for the next working day in the 'Do this week' list.
+     - **Somewhat know**: The challenge is scheduled for a week later. Depending on the new due date, it might remain in the 'Do this week' list or be moved to the 'Backlog'.
+     - **Know**: The challenge is deemed completed and is scheduled for a review four weeks later in the 'Completed' list.
+
+3. **Backlog Management**: 
+   - If there's a shortfall in the 'To Do this Week' list, cards from the 'Backlog' are promoted to fill the gap.
+   
 ## Setup 🛠️
 
 ### 1. Obtain API Key from Trello:
@@ -78,14 +92,24 @@ If you face an issue that's not listed above, please raise an issue in the GitHu
 
 ## Customization 🎨
 
-The Trello LeetCoding75 Scheduler is designed to be flexible and customizable according to your needs. If you'd like to tailor the challenges, scheduling, or any other aspect, here's how you can get started:
+The Trello LeetCoding75 Scheduler is designed to be flexible and customizable according to your needs. Here's how you can adjust the settings to match your preferences:
 
-1. **Modify Challenges**: The `topics` dictionary in `leetcode_trello_manager.py` contains all the challenges categorized by topics. You can add, remove, or modify challenges as needed.
-2. **Adjust Scheduling**: The function `generate_all_due_dates` determines the due dates for challenges. Modify this if you'd like to change the scheduling logic.
-3. **Trello Board Customization**: The board name, lists, and other configurations are defined within the script. Adjust these constants and functions to customize the Trello board's appearance and structure.
+### 1. Modifying the Problem Sets 🧩
 
-Remember to thoroughly test your changes locally before deploying them to ensure the scheduler's smooth operation.
+The problem sets are organized into various categories like "Arrays and Strings", "Two Pointers", "Sliding Window", and so on. Each problem has a title and an associated difficulty. 
 
+To adjust the problems:
+- Open the provided JSON file.
+- Under the desired category, you can add, remove, or modify problems as you see fit.
+- Ensure each problem has a "title" and a "difficulty" key.
+
+### 2. Adjusting Trello Settings ⚙️
+
+The settings for interacting with Trello are contained within the `settings.ini` file. Here's how you can modify them:
+
+- **Week Settings**: The `[WEEK]` section contains the details about the workweek. Adjust `START_DAY`, `END_DAY`, and `WORKDAYS` according to your work schedule.
+- **Labels**: The `[LABELS]` section defines the default colors for various difficulty levels or problem statuses. Modify the `DEFAULT_COLORS` setting to add or change label colors.
+- **Problems Per Day**: Under the `[PROBLEMS]` section, you can set the `PROBLEMS_PER_DAY` to determine how many problems you want to tackle each day.
 
 ## Contribution 🤝
 
