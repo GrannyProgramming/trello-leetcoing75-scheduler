@@ -83,6 +83,9 @@ def manage_board_lists(board_id):
         if check_list_exists(_config, _settings, board_id, default_list):
             delete_list(_config, _settings, board_id, default_list)
 
+    # Delete all labels on the board
+    delete_all_labels(_config, _settings, board_id)
+
     for required_list in _settings["REQUIRED_LISTS"]:
         if not check_list_exists(_config, _settings, board_id, required_list):
             create_list(_config, _settings, board_id, required_list)
@@ -243,3 +246,25 @@ def get_member_id(_config, _settings):
     """Retrieve the member ID."""
     response = trello_request(_config, _settings, "me", entity=TRELLO_ENTITY["MEMBER"])
     return response.get("id") if response else None
+
+
+def get_labels_on_board(_config, _settings, board_id):
+    """Fetch all labels on the board."""
+    return trello_request(_config, _settings, f"{board_id}/labels")
+
+def delete_label(_config, _settings, label_id):
+    """Delete a label."""
+    return trello_request(
+        _config,
+        _settings,
+        label_id,
+        method="DELETE",
+        entity="labels"
+    )
+
+
+def delete_all_labels(_config, _settings, board_id):
+    """Delete all labels on the board."""
+    labels = get_labels_on_board(_config, _settings, board_id)
+    for label in labels:
+        delete_label(_config, _settings, label["id"])
