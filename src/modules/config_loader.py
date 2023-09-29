@@ -49,6 +49,7 @@ def load_ini_settings():
             item.split(":") for item in config["LABELS"]["DEFAULT_COLORS"].split(", ")
         ),
         "PROBLEMS_PER_DAY": int(config["PROBLEMS"]["PROBLEMS_PER_DAY"]),
+        "COMMENT_MD_PATH": config["FILES"]["COMMENT_MD_PATH"],
     }
 
 

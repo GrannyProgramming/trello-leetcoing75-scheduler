@@ -46,7 +46,8 @@ from .utilities import (
     is_due_this_week,
     generate_leetcode_link,
     generate_all_due_dates,
-    get_list_name_and_due_date
+    get_list_name_and_due_date,
+    load_comment_from_md_file,
 )
 
 logging.basicConfig(
@@ -275,6 +276,21 @@ def fetch_cards_from_list(_config, _settings, list_id):
         return None
     return trello_request(_config, _settings, "cards", entity="lists", list_id=list_id)
 
+
+def add_comment_to_card(_config, _settings, card_id, comment_content):
+    """Add a comment to a given card."""
+    response = trello_request(
+        _config,
+        _settings,
+        f"{card_id}/actions/comments",
+        "POST",
+        entity="cards",
+        text=comment_content,
+    )
+    if not response:
+        logging.error("Failed to add comment to card %s", card_id)
+
+
 def process_single_problem_card(
     _config,
     _settings,
@@ -318,6 +334,8 @@ def process_single_problem_card(
             logging.error("Failed to create card: %s", card_name)
             return
         attach_image_to_card(_config, _settings, card_response["id"], category)
+        comment_md_content = load_comment_from_md_file(_settings["COMMENT_MD_PATH"])
+        add_comment_to_card(_config, _settings, card_response["id"], comment_md_content)
 
 
 def process_all_problem_cards(_config, _settings, board_id, topics, current_date):

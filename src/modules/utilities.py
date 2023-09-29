@@ -41,8 +41,6 @@ def generate_leetcode_link(title):
     return f"https://leetcode.com/problems/{title.lower().replace(' ', '-')}/"
 
 
-
-
 def generate_all_due_dates(topics, current_date, problems_per_day):
     """Generate due dates for every problem, considering weekdays."""
     due_dates = []
@@ -114,3 +112,11 @@ def determine_new_due_date_and_list(label_names, current_date):
 def parse_card_due_date(card_due):
     """Parse the 'due' date of a card into a datetime object."""
     return datetime.fromisoformat(card_due.replace("Z", ""))
+
+
+def load_comment_from_md_file(md_file_path):
+    """
+    Load the content of the markdown file and return as a string.
+    """
+    with open(md_file_path, "r", encoding="utf-8") as md_file:
+        return md_file.read()
