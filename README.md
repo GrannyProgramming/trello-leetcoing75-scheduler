@@ -68,7 +68,7 @@ After tackling each LeetCode challenge during the week, setting aside time to in
 Once you've labeled your challenges in the 'Retrospective' list:
 
 1. **Pipeline Execution**: 
-   - **Manual Trigger**: If you wish to see the changes reflected immediately, navigate to the `Actions` tab of your GitHub repository, select the appropriate workflow, and manually trigger the pipeline.
+   - **Manual Trigger**: If you wish to see the changes reflected immediately, navigate to the `Actions` tab of your GitHub repository, select the Run Trello Script, and manually trigger the pipeline.
    - **Scheduled Run**: Alternatively, if you prefer to wait, the pipeline is set to run automatically at 01:00 UTC every Monday.
 2. **Label-Based Scheduling**: 
    - **Know**: Challenges labeled as "Know" are scheduled for infrequent reviews, ensuring you're revisiting them just enough to retain your understanding.
