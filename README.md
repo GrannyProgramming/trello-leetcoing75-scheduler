@@ -2,7 +2,7 @@
 
 Automate and optimize your LeetCode challenge preparation with the Trello LeetCoding75 Scheduler. This tool helps create a systematic study plan by categorizing challenges on a Trello board based on topic, difficulty, and due dates.
 
-![Trello_Board](./imgs/Trello_LC.png)
+![Trello_Board](./imgs/trello_board_ex.png)
 
 
 ## Features 🌟
@@ -52,9 +52,12 @@ After tackling each LeetCode challenge during the week, setting aside time to in
 - **Solution Benchmarking**: Compare your method with alternatives in terms of simplicity and efficiency.
 - **Future Adaptations**: Think about potential variations of the problem and how you'd adapt your strategy.
 
+![Trello_Board](./imgs/comment_retro.png)
+
 ### Review Process:
 
-1. **Card Movement**: After your self-assessment, manually move the challenge card from the 'To Do this Week' list to the 'Retrospective' list on Trello.
+
+1. **Card Movement**: After your self-assessment, manually move the challenge card from the 'To Do this Week' list to the 'Retrospective' list on Trello. (Will update this to move automatically in future)
 2. **Label Assignment**: Within the 'Retrospective' list, apply one of the following labels to the card based on your understanding:
    - **Know**: You feel confident about your grasp and solution.
    - **Somewhat Know**: You understand the basics but had certain uncertainties.
