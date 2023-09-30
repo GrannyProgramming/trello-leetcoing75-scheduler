@@ -52,7 +52,6 @@ After tackling each LeetCode challenge during the week, setting aside time to in
 - **Solution Benchmarking**: Compare your method with alternatives in terms of simplicity and efficiency.
 - **Future Adaptations**: Think about potential variations of the problem and how you'd adapt your strategy.
 
-![Trello_Board](./imgs/comment_retro.png)
 
 ### Review Process:
 
