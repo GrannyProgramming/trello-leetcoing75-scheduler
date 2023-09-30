@@ -35,7 +35,41 @@ One of the core principles that influenced the design of this scheduler is the c
 
 3. **Backlog Management**: 
    - If there's a shortfall in the 'To Do this Week' list, cards from the 'Backlog' are promoted to fill the gap.
-   
+
+## Retrospective Review 📝
+
+After tackling each LeetCode challenge during the week, setting aside time to introspect on your comprehension is pivotal. We've introduced a structured comment to aid this self-assessment, guiding you through:
+
+- **Problem Understanding**: Reevaluate your grasp of the challenge.
+- **Solution Strategy**: Deliberate on your chosen methodologies.
+- **Efficiency Analysis**: Consider the performance and robustness of your solution.
+- **Code Implementation**: Reflect on the coding phase, noting any challenges or revelations.
+- **Test Depth**: Gauge the comprehensiveness of your tests and consideration of edge cases.
+- **Learning Takeaways**: Identify any new algorithms or concepts you encountered.
+- **Solution Benchmarking**: Compare your method with alternatives in terms of simplicity and efficiency.
+- **Future Adaptations**: Think about potential variations of the problem and how you'd adapt your strategy.
+
+### Review Process:
+
+1. **Card Movement**: After your self-assessment, manually move the challenge card from the 'To Do this Week' list to the 'Retrospective' list on Trello.
+2. **Label Assignment**: Within the 'Retrospective' list, apply one of the following labels to the card based on your understanding:
+   - **Know**: You feel confident about your grasp and solution.
+   - **Somewhat Know**: You understand the basics but had certain uncertainties.
+   - **Do Not Know**: You found the challenge particularly tough and had difficulties.
+
+### Spaced Repetition Integration:
+
+Once you've labeled your challenges in the 'Retrospective' list:
+
+1. **Pipeline Execution**: 
+   - **Manual Trigger**: If you wish to see the changes reflected immediately, navigate to the `Actions` tab of your GitHub repository, select the appropriate workflow, and manually trigger the pipeline.
+   - **Scheduled Run**: Alternatively, if you prefer to wait, the pipeline is set to run automatically at 01:00 UTC every Monday.
+2. **Label-Based Scheduling**: 
+   - **Know**: Challenges labeled as "Know" are scheduled for infrequent reviews, ensuring you're revisiting them just enough to retain your understanding.
+   - **Somewhat Know**: These challenges are scheduled for moderate frequency, allowing you to reinforce and solidify your understanding over time.
+   - **Do Not Know**: Challenges with this label are set for more frequent reviews, ensuring you get ample practice until you're confident.
+
+
 ## Setup 🛠️
 
 ### 1. Obtain API Key from Trello:
