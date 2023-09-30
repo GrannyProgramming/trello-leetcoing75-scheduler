@@ -2,7 +2,7 @@
 
 Automate and optimize your LeetCode challenge preparation with the Trello LeetCoding75 Scheduler. This tool helps create a systematic study plan by categorizing challenges on a Trello board based on topic, difficulty, and due dates.
 
-![Trello_Board](./imgs/trello_board_ex.png)
+![Trello_Board](./imgs/trello_board.png)
 
 
 ## Features 🌟
