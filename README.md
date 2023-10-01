@@ -56,7 +56,7 @@ After tackling each LeetCode challenge during the week, setting aside time to in
 ### Review Process:
 
 
-1. **Card Movement**: After your self-assessment, manually move the challenge card from the 'To Do this Week' list to the 'Retrospective' list on Trello. (Will update this to move automatically in future)
+1. **Card Movement**: After your self-assessment, manually move the challenge card from the 'To Do this Week' list to the 'Retrospective' list on Trello. 
 2. **Label Assignment**: Within the 'Retrospective' list, apply one of the following labels to the card based on your understanding:
    - **Know**: You feel confident about your grasp and solution.
    - **Somewhat Know**: You understand the basics but had certain uncertainties.
@@ -67,7 +67,7 @@ After tackling each LeetCode challenge during the week, setting aside time to in
 Once you've labeled your challenges in the 'Retrospective' list:
 
 1. **Pipeline Execution**: 
-   - **Manual Trigger**: If you wish to see the changes reflected immediately, navigate to the `Actions` tab of your GitHub repository, select the Run Trello Script, and manually trigger the pipeline.
+   - **Manual Trigger**: If you wish to see the changes reflected immediately, navigate to the `Actions` tab of your GitHub repository, select the Run Trello Script, and manually trigger the pipeline. (Will update this in the future to move automatically)
    - **Scheduled Run**: Alternatively, if you prefer to wait, the pipeline is set to run automatically at 01:00 UTC every Monday.
 2. **Label-Based Scheduling**: 
    - **Know**: Challenges labeled as "Know" are scheduled for infrequent reviews, ensuring you're revisiting them just enough to retain your understanding.
